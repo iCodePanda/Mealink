@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "800251193516",
+    "project_id": "mealink-cs346",
+    "storage_bucket": "mealink-cs346.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:800251193516:android:ef94797cbbf0f7270fd709",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjxUzLaVp36XPNmNmSYg89IchwJj1NYLE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
