@@ -12,6 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.material.Button
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,9 +23,11 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    test("Click me!")
+                Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF8F8F8)) {
+
                 }
+                //test("Click me!")
+                title()
             }
         }
     }
@@ -31,6 +37,16 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun test(name: String) {
     Button(onClick = { println("Button pressed") }) {
-        Text("Hello $name")
+        Text("$name")
     }
+}
+
+@Composable
+fun title(){
+    Text(
+        "Mealink",
+        color = Color(0xFF00BF81),
+        fontSize = 48.sp,
+        textAlign = TextAlign.Center
+    )
 }
