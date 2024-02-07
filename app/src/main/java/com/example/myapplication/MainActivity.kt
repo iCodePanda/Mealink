@@ -3,19 +3,22 @@ package com.example.myapplication
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 
 
 class MainActivity : ComponentActivity() {
@@ -35,6 +38,7 @@ class MainActivity : ComponentActivity() {
                     button("Sign in with Google")
                     button("Log in with Email")
                     Text("Don't have an account?")
+                    mainPageImage()
 
                     button("Create Account")
                 }
@@ -74,15 +78,10 @@ fun title(){
 //        }
 //}
 
-//@Composable
-//fun mainPageImage() {
-//    Image(
-//        painter = painterResource(undraw_breakfast_psiw.png)
-//        contentDescription = null,
-//        contentScale = ContentScale.Fit,
-//        modifier = Modifier
-//            .height(150.dp)
-//            .fillMaxWidth()
-//            .clip(shape = RoundedCornerShape(10.dp))
-//    )
-//}
+@Composable
+fun mainPageImage() {
+    Image(
+        painter = painterResource(id = R.drawable.undraw_breakfast_psiw),
+        contentDescription = null
+    )
+}
