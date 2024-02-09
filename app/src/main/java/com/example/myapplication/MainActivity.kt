@@ -82,39 +82,3 @@ fun mainPageImage() {
     )
 }
 
-@Composable
-fun InnerShadowText(text: String) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawIntoCanvas { canvas ->
-                // Save the canvas state
-                val saved = canvas.nativeCanvas.save()
-
-                // Apply the text style
-                val paint = androidx.compose.ui.graphics.Paint().asFrameworkPaint()
-                paint.textSize = 48f // Text size
-                paint.color = Color.Black.toArgb() // Text color
-                paint.textAlign = android.graphics.Paint.Align.LEFT
-
-                // Draw the text with the shadow
-                val textX = size.width / 2 - paint.measureText(text) / 2
-                val textY = size.height / 2
-                canvas.nativeCanvas.drawText(text, textX, textY, paint)
-
-                // Apply inner shadow effect
-                paint.setShadowLayer(
-                    8f, // Shadow radius
-                    0f, // Shadow offset X
-                    0f, // Shadow offset Y
-                    Color.Gray.toArgb() // Shadow color
-                )
-
-                // Draw the text again to apply the inner shadow
-                canvas.nativeCanvas.drawText(text, textX, textY, paint)
-
-                // Restore the canvas state
-                canvas.nativeCanvas.restoreToCount(saved)
-            }
-        }
-    }
-}
