@@ -1,4 +1,4 @@
-package com.example.myapplication.view
+package com.example.myapplication
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,7 +13,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
@@ -106,14 +105,6 @@ fun buttonCreateAccount() {
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Create an Account!") },
         onClick = { /*idk*/ },
-        icon = {
-//            Icon(
-//                painter = painterResource(id = R.drawable.email),
-//                "",
-//                tint = Color.Unspecified,
-//                modifier = Modifier.size(25.dp)
-//            )
-        },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
     )
 }
