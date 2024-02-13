@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,8 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
-
+import androidx.core.content.ContextCompat.startActivity
 
 
 class MainActivity : ComponentActivity() {
@@ -97,6 +99,8 @@ fun buttonEmail() {
 
 @Composable
 fun buttonCreateAccount() {
+    val context = LocalContext.current
+    println(context)
     ExtendedFloatingActionButton(
         modifier = Modifier
             .fillMaxWidth()
@@ -104,7 +108,7 @@ fun buttonCreateAccount() {
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Create an Account!") },
-        onClick = { /*idk*/ },
+        onClick = { startActivity(context, Intent(context, SignUpActivity::class.java), null) },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
     )
 }
