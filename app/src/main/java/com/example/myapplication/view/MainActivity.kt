@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.R
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
+
 
 
 class MainActivity : ComponentActivity() {
@@ -28,12 +33,19 @@ class MainActivity : ComponentActivity() {
                     ) {
                         title()
                         mainPageImage()
-                        Spacer(modifier = Modifier.padding(top = 30.dp))
-                        button("Continue with Google")
+                        //Spacer(modifier = Modifier.padding(top = 30.dp))
+                        buttonGoogle()
                         Spacer(modifier = Modifier.padding(top = 25.dp))
-                        button("Log in with Email")
+                        buttonEmail()
                         Spacer(modifier = Modifier.padding(top = 25.dp))
-                        button("Create New Account")
+                        Box(modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp),
+                            contentAlignment = Alignment.CenterStart) {
+                            notMember()
+                        }
+                        buttonCreateAccount()
                     }
                 }
             }
@@ -41,16 +53,82 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
-fun button(name: String) {
+fun buttonGoogle() {
     ExtendedFloatingActionButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
-        text = { Text("$name") },
+        backgroundColor = Color(0xFFFFFFFF),
+        text = { Text("Continue with Google") },
         onClick = { /*idk*/ },
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.google),
+                "",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(40.dp)
+            )
+        },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
+    )
+}
+
+@Composable
+fun buttonEmail() {
+    ExtendedFloatingActionButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        backgroundColor = Color(0xFF00BF81),
+        contentColor = Color(0xFFFFFFFF),
+        text = { Text("Login with Email") },
+        onClick = { /*idk*/ },
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.email),
+                "",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(25.dp)
+            )
+        },
+        elevation = FloatingActionButtonDefaults.elevation(8.dp)
+    )
+}
+
+@Composable
+fun buttonCreateAccount() {
+    ExtendedFloatingActionButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        backgroundColor = Color(0xFF00BF81),
+        contentColor = Color(0xFFFFFFFF),
+        text = { Text("Create an Account!") },
+        onClick = { /*idk*/ },
+        icon = {
+//            Icon(
+//                painter = painterResource(id = R.drawable.email),
+//                "",
+//                tint = Color.Unspecified,
+//                modifier = Modifier.size(25.dp)
+//            )
+        },
+        elevation = FloatingActionButtonDefaults.elevation(8.dp)
+    )
+}
+
+@Composable
+fun notMember() {
+    Text(
+        "Not a member yet?",
+        style = TextStyle(
+            shadow = Shadow(
+                color = Color.LightGray,
+                offset = Offset(4f, 4f),
+                blurRadius = 8f
+            )
+        )
     )
 }
 @Composable
@@ -59,7 +137,6 @@ fun title() {
         "Mealink",
         color = Color(0xFF00BF81),
         fontSize = 65.sp,
-
     )
 }
 @Composable
