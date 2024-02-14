@@ -58,7 +58,9 @@ fun SignUpScreen() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     EmailField(email = email, onEmailChange = { email = it })
+    Spacer(modifier = Modifier.padding(top = 20.dp))
     PasswordField(password = password, onPasswordChange = { password = it })
+    Spacer(modifier = Modifier.padding(top = 20.dp))
     SignUpButton(email, password)
 }
 
@@ -78,14 +80,31 @@ fun SignUpButton(email: String, password: String) {
 }
 
 @Composable
+fun AccountNameField(accountName: String, onPasswordChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = accountName,
+        onValueChange = onPasswordChange,
+        label = { Text("Name") }
+    )
+}
+@Composable
 fun EmailField(email: String, onEmailChange: (String) -> Unit) {
-    OutlinedTextField(value = email, onValueChange = onEmailChange, label = { Text("Name") })
+    OutlinedTextField(
+        value = email,
+        onValueChange = onEmailChange,
+        label = { Text("Name") }
+    )
 }
 
 @Composable
 fun PasswordField(password: String, onPasswordChange: (String) -> Unit) {
-    OutlinedTextField(value = password, onValueChange = onPasswordChange, label = { Text("Name") })
+    OutlinedTextField(
+        value = password,
+        onValueChange = onPasswordChange,
+        label = { Text("Name") }
+    )
 }
+
 
 fun createAccount(email: String, password: String, context: Context) {
     auth.createUserWithEmailAndPassword(email, password)
