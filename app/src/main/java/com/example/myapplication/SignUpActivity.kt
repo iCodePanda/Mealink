@@ -26,9 +26,11 @@ import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 
 
 private lateinit var auth: FirebaseAuth
+val db = Firebase.firestore
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,6 +116,19 @@ fun createAccount(email: String, password: String, context: Context) {
                 Log.d(TAG, "createUserWithEmail:success")
                 val user = auth.currentUser
 //                    updateUI(user)
+                val userTableEntry = hashMapOf(
+                    "name" to "McDonalds",
+                    "location" to "N2L 3G1",
+                    "type" to "foodDonor",
+                )
+                db.collection("users")
+                    .add(userTableEntry)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w(TAG, "Error adding document", e)
+                    }
             } else {
                 // If sign in fails, display a message to the user.
                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
