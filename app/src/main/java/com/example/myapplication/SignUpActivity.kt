@@ -59,15 +59,26 @@ class SignUpActivity : ComponentActivity() {
 fun SignUpScreen() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var type by remember { mutableStateOf("") }
+    var location by remember { mutableStateOf("") }
+
     EmailField(email = email, onEmailChange = { email = it })
     Spacer(modifier = Modifier.padding(top = 20.dp))
     PasswordField(password = password, onPasswordChange = { password = it })
     Spacer(modifier = Modifier.padding(top = 20.dp))
-    SignUpButton(email, password)
+    NameField(name = name, onNameChange = { name = it })
+    Spacer(modifier = Modifier.padding(top = 20.dp))
+    TypeField(type = type, onTypeChange = { type = it })
+    Spacer(modifier = Modifier.padding(top = 20.dp))
+    LocationField(location = location, onLocationChange = { location = it })
+    Spacer(modifier = Modifier.padding(top = 20.dp))
+
+    SignUpButton(email, password, name, type, location)
 }
 
 @Composable
-fun SignUpButton(email: String, password: String) {
+fun SignUpButton(email: String, password: String, name: String, type: String, location: String) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         modifier = Modifier
@@ -76,25 +87,43 @@ fun SignUpButton(email: String, password: String) {
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Sign Up") },
-        onClick = { createAccount(email, password, context) },
+        onClick = { createAccount(email, password, name, type, location, context) },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
     )
 }
 
 @Composable
-fun AccountNameField(accountName: String, onPasswordChange: (String) -> Unit) {
+fun NameField(name: String, onNameChange: (String) -> Unit) {
     OutlinedTextField(
-        value = accountName,
-        onValueChange = onPasswordChange,
+        value = name,
+        onValueChange = onNameChange,
         label = { Text("Name") }
     )
 }
+
+@Composable
+fun TypeField(type: String, onTypeChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = type,
+        onValueChange = onTypeChange,
+        label = { Text("Type (foodDonor or foodReceiver)") }
+    )
+}
+@Composable
+fun LocationField(location: String, onLocationChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = location,
+        onValueChange = onLocationChange,
+        label = { Text("Location (Postal Code)") }
+    )
+}
+
 @Composable
 fun EmailField(email: String, onEmailChange: (String) -> Unit) {
     OutlinedTextField(
         value = email,
         onValueChange = onEmailChange,
-        label = { Text("Name") }
+        label = { Text("Email") }
     )
 }
 
@@ -103,12 +132,12 @@ fun PasswordField(password: String, onPasswordChange: (String) -> Unit) {
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = { Text("Name") }
+        label = { Text("Password") }
     )
 }
 
 
-fun createAccount(email: String, password: String, context: Context) {
+fun createAccount(email: String, password: String, name: String, type: String, location: String, context: Context) {
     auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -117,9 +146,9 @@ fun createAccount(email: String, password: String, context: Context) {
                 val user = auth.currentUser
 //                    updateUI(user)
                 val userTableEntry = hashMapOf(
-                    "name" to "McDonalds",
-                    "location" to "N2L 3G1",
-                    "type" to "foodDonor",
+                    "name" to name,
+                    "location" to location,
+                    "type" to type,
                 )
                 db.collection("users")
                     .add(userTableEntry)
