@@ -77,6 +77,7 @@ fun buttonGoogle() {
 
 @Composable
 fun buttonEmail() {
+    val context = LocalContext.current
     ExtendedFloatingActionButton(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,7 +85,7 @@ fun buttonEmail() {
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Login with Email") },
-        onClick = { /*idk*/ },
+        onClick = { startActivity(context, Intent(context, SignInActivity::class.java), null) },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.email),
