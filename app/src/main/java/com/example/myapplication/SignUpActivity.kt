@@ -151,9 +151,10 @@ fun createAccount(email: String, password: String, name: String, type: String, l
                     "type" to type,
                 )
                 db.collection("users")
-                    .add(userTableEntry)
-                    .addOnSuccessListener { documentReference ->
-                        Log.d(TAG, "DocumentSnapshot added with ID: ${documentReference.id}")
+                    .document(user!!.uid)
+                    .set(userTableEntry)
+                    .addOnSuccessListener {
+                        Log.d(TAG, "DocumentSnapshot added")
                     }
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error adding document", e)
