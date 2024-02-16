@@ -30,4 +30,4 @@ This version contains:
 - Error handling for incomplete sign-up form, or incorrect credentials upon sign-in
 
 
-Link to Installer
+[Link to Installer](https://git.uwaterloo.ca/g24kang/team-101-10/-/blob/a00974858b9f8ce5d77211fa2313f23bfbac6189/Releases/v0.1/app-debug.apk)
