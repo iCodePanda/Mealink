@@ -1,1 +1,10 @@
+v0.1
 
+Firebase cloud computing service setup
+Home page complete with buttons for Sign-up, Sign-In, and placeholder for Google Sign-in (Will be done in next release)
+Firebase Database set up with tables for Users and Food-Items
+User sign up with email and additional required fields which persist to the database collection (Users)
+User sign in with authentication
+Firebase Authentication Completed
+Authenticated user is directly mapped to user record in Users collection in DB according to Primary Key: User UID
+Error handling for incomplete sign-up form, or incorrect credentials upon sign-in
