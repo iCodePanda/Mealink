@@ -27,6 +27,7 @@ This version contains:
 - User sign in with authentication
 - Firebase Authentication Completed
 - Authenticated user is directly mapped to user record in Users collection in DB according to Primary Key: User UID 
+- Error handling for incomplete sign-up form, or incorrect credentials upon sign-in
 
 
 Link to Installer
