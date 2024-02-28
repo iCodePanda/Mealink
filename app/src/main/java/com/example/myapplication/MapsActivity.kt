@@ -14,7 +14,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Set the layout file as the content view.
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_maps)
 
         // Get a handle to the fragment and register the callback.
         val mapFragment = supportFragmentManager
