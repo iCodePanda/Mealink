@@ -34,7 +34,7 @@ import com.google.firebase.auth.auth
 
 private lateinit var auth: FirebaseAuth
 
-class SignInActivity : ComponentActivity() {
+class SignInActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         // Initialize Firebase Auth
         auth = Firebase.auth
