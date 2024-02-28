@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -29,6 +30,12 @@
         <activity android:name=".SignInActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"
                   android:exported="false" />
+        <activity android:name=".MapsActivity"
+                  android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+                  android:exported="false" />
+        <meta-data
+                android:name="com.google.android.geo.AIzaSyAlNMKis8rVrPYLLSh9Gg_X-_iDhDTqCmM"
+                android:value="YOUR_API_KEY_HERE"/>
     </application>
 
 </manifest>

@@ -73,5 +73,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation("com.google.firebase:firebase-firestore")
+    // Maps ?
+    implementation 'com.google.android.gms:play-services-maps:17.0.1'
 }
 

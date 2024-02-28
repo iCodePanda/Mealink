@@ -58,13 +58,15 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun buttonGoogle() {
+    val context = LocalContext.current
     ExtendedFloatingActionButton(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         backgroundColor = Color(0xFFFFFFFF),
         text = { Text("Continue with Google") },
-        onClick = { /*idk*/ },
+
+        onClick = { startActivity(context, Intent(context, MapsActivity::class.java), null) },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.google),
