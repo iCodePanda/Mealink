@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -88,7 +90,29 @@ fun SignUpButton(email: String, password: String, name: String, type: String, lo
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Sign Up") },
-        onClick = { createAccount(email, password, name, type, location, context) },
+        onClick = {
+            val emailFormat = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
+            val passwordFormat = Regex("^(?=.*[0-9]).{8,}\$")
+            val locationFormat = Regex("^[A-Z]\\d[A-Z] \\d[A-Z]\\d\$")
+            if (!email.matches(emailFormat)) {
+                Toast.makeText(context, "Invalid Email", Toast.LENGTH_SHORT).show()
+            }
+            else if (!password.matches(passwordFormat)) {
+                Toast.makeText(context, "Invalid Password", Toast.LENGTH_SHORT).show()
+            }
+            else if (name == "") {
+                Toast.makeText(context, "Please Enter a Name", Toast.LENGTH_SHORT).show()
+            }
+            else if (type == "") {
+                Toast.makeText(context, "Please Select a Type", Toast.LENGTH_SHORT).show()
+            }
+            else if (!location.matches(locationFormat)) {
+                Toast.makeText(context, "Invalid Postal Code", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                createAccount(email, password, name, type, location, context)
+            }
+                  },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
     )
 }
@@ -102,14 +126,44 @@ fun NameField(name: String, onNameChange: (String) -> Unit) {
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TypeField(type: String, onTypeChange: (String) -> Unit) {
-    OutlinedTextField(
-        value = type,
-        onValueChange = onTypeChange,
-        label = { Text("Type (foodDonor or foodReceiver)") }
-    )
+    val options = arrayOf("foodDonor", "foodReceiver")
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf("Select an Option") }
+
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            },
+        ) {
+            OutlinedTextField(
+                value = type,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                label = { Text("Type") }
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { item ->
+                    DropdownMenuItem(
+                        content = { Text(text = item) },
+                        onClick = {
+                            expanded = false
+                            onTypeChange(item)
+                        }
+                    )
+                }
+            }
+        }
 }
+
 @Composable
 fun LocationField(location: String, onLocationChange: (String) -> Unit) {
     OutlinedTextField(
@@ -133,8 +187,9 @@ fun PasswordField(password: String, onPasswordChange: (String) -> Unit) {
     OutlinedTextField(
         value = password,
         onValueChange = onPasswordChange,
-        label = { Text("Password") }
-    )
+        label = { Text("Password") },
+        visualTransformation = PasswordVisualTransformation(),
+        )
 }
 
 
