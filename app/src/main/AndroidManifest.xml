@@ -29,15 +29,20 @@
         </activity>
         <activity android:name=".SignInActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-                  android:exported="false"
-                  android:noHistory="true" />
+                  android:exported="false" />
         <activity android:name=".MapsActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"
                   android:exported="false" />
-        <activity android:name=".UserProfileActivity"/>
+        <activity
+            android:name=".ProfilePicActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            android:exported="false" />
         <meta-data
-                android:name="com.google.android.geo.AIzaSyAlNMKis8rVrPYLLSh9Gg_X-_iDhDTqCmM"
+                android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyAlNMKis8rVrPYLLSh9Gg_X-_iDhDTqCmM"/>
     </application>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
 
 </manifest>
