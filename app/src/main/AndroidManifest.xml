@@ -29,7 +29,8 @@
         </activity>
         <activity android:name=".SignInActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-                  android:exported="false" />
+                  android:exported="false"
+                  android:noHistory="true" />
         <activity android:name=".MapsActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"
                   android:exported="false" />
@@ -37,6 +38,7 @@
             android:name=".ProfilePicActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false" />
+        <activity android:name=".UserProfileActivity"/>
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyAlNMKis8rVrPYLLSh9Gg_X-_iDhDTqCmM"/>
