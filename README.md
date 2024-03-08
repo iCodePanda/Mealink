@@ -31,3 +31,38 @@ This version contains:
 
 
 [Link to Installer](https://git.uwaterloo.ca/g24kang/team-101-10/-/blob/a00974858b9f8ce5d77211fa2313f23bfbac6189/Releases/v0.1/app-debug.apk)
+
+
+**SPRINT 2:**
+
+_08-February-2024
+V 0.2_
+
+
+_Features/Tickets Completed (more details in development journal):_
+
+Finish Integrating Google Maps API:
+[Integrate Google Maps API](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/17)
+
+Sign-up page refactors:
+#32 (closed)
+#28 (closed)
+Profile Picture Uploading:
+#29 (closed)
+User Profile Building:
+#26 (closed)
+#25 (closed)
+#31 (closed)
+
+_Summary:_
+
+This version contains:
+
+
+Link to Installer
+
+
+
+
+
+
