@@ -67,6 +67,6 @@ This version contains:
 - Base user profile where users can make changes to their account such as name and location, and have those changes persist to the database
 - Ability to change profile picture within user profile
 
-Link to Installer
+[Link to Installer](https://git.uwaterloo.ca/g24kang/team-101-10/-/blob/bb595f2be547a1ab595df110ffdbd34e16aec338/Releases/v0.2/app-debug.apk)
 
 
