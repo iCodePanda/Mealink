@@ -215,6 +215,11 @@ fun createAccount(email: String, password: String, name: String, type: String, l
                     .addOnFailureListener { e ->
                         Log.w(TAG, "Error adding document", e)
                     }
+                Toast.makeText(
+                    context,
+                    "User $name Registered Successfully!",
+                    Toast.LENGTH_SHORT,
+                ).show()
             } else {
                 // If sign in fails, display a message to the user.
                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
