@@ -158,9 +158,7 @@ fun mainPageImage() {
     Image(
         painter = painterResource(id = R.drawable.undraw_breakfast_psiw),
         contentDescription = null,
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
