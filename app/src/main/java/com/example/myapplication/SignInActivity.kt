@@ -34,35 +34,21 @@ import com.google.firebase.auth.auth
 
 private lateinit var auth: FirebaseAuth
 
-class SignInActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        // Initialize Firebase Auth
-        auth = Firebase.auth
-
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_up)
-        setContent {
-            MyApplicationTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
-                    Column(
-                        modifier = Modifier.padding(top = 50.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        SignInScreen()
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun SignInScreen() {
+    auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    logInEmailField(email = email, onEmailChange = { email = it })
-    logInPasswordField(password = password, onPasswordChange = { password = it })
-    signInButton(email, password)
+    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+        Column(
+            modifier = Modifier.padding(top = 50.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            logInEmailField(email = email, onEmailChange = { email = it })
+            logInPasswordField(password = password, onPasswordChange = { password = it })
+            signInButton(email, password)
+        }
+    }
 }
 
 @Composable
@@ -105,7 +91,6 @@ fun signIn(email: String, password: String, context: Context) {
                     "Authentication failed.",
                     Toast.LENGTH_SHORT,
                 ).show()
-//                updateUI(null)
             }
         }
 }

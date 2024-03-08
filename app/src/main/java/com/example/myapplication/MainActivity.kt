@@ -21,37 +21,51 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.core.content.ContextCompat.startActivity
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.components.Component
-
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
-                    Column(
-                        modifier = Modifier.padding(top = 50.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        title()
-                        mainPageImage()
-                        //Spacer(modifier = Modifier.padding(top = 30.dp))
-                        buttonGoogle()
-                        Spacer(modifier = Modifier.padding(top = 25.dp))
-                        buttonEmail()
-                        Spacer(modifier = Modifier.padding(top = 25.dp))
-                        Box(modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp),
-                            contentAlignment = Alignment.CenterStart) {
-                            notMember()
-                        }
-                        buttonCreateAccount()
-                    }
-                }
+            AppNavigation()
+        }
+    }
+}
+
+@Composable
+fun AppNavigation() {
+    val navController = rememberNavController()
+    MyApplicationTheme {
+        NavHost(navController = navController, startDestination = Screens.Home.route) {
+            composable(Screens.Home.route) {
+                Home(navController)
             }
+            composable(Screens.Login.route) {
+                SignInScreen()
+            }
+        }
+    }
+
+}
+
+@Composable
+fun Home(navController: NavController) {
+    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+        Column(
+            modifier = Modifier.padding(top = 50.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(25.dp),
+        ) {
+            title()
+            mainPageImage()
+            buttonGoogle()
+            buttonEmail(navController)
+            notMember()
+            buttonCreateAccount()
         }
     }
 }
@@ -80,7 +94,7 @@ fun buttonGoogle() {
 }
 
 @Composable
-fun buttonEmail() {
+fun buttonEmail(navController: NavController) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         modifier = Modifier
@@ -89,7 +103,7 @@ fun buttonEmail() {
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Login with Email") },
-        onClick = { startActivity(context, Intent(context, SignInActivity::class.java), null) },
+        onClick = { navController.navigate(Screens.Login.route) },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.email),
