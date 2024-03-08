@@ -45,24 +45,26 @@ Finish Integrating Google Maps API:
 [Integrate Google Maps API](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/17)
 
 Sign-up page refactors:
-#32 (closed)
-#28 (closed)
+[Success Validation Messages](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/32)
+[Sign-up page refactors](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/28)
+
 Profile Picture Uploading:
-#29 (closed)
+[Profile Picture Uploads](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/29)
+
 User Profile Building:
-#26 (closed)
-#25 (closed)
-#31 (closed)
+[User Profile Back End](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/26)
+[User Profile Front End](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/25)
+[Populate User Profile Screen](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/31)
+
 
 _Summary:_
 
 This version contains:
-
+- Integrated Google Maps API ready to be used throughout the application
+- Refactors made to the sign-up page to provide validation and success messages for better user experience
+- Base user profile where users can make changes to their account such as name and location, and have those changes persist to the database
+- Ability to change profile picture within user profile
 
 Link to Installer
-
-
-
-
 
 
