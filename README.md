@@ -42,19 +42,21 @@ V 0.2_
 _Features/Tickets Completed (more details in development journal):_
 
 Finish Integrating Google Maps API:
-[Integrate Google Maps API](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/17)
+- [Integrate Google Maps API](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/17)
 
 Sign-up page refactors:
-[Success Validation Messages](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/32)
-[Sign-up page refactors](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/28)
+- [Success Validation Messages](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/32)
+- [Sign-up page refactors](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/28)
+
 
 Profile Picture Uploading:
-[Profile Picture Uploads](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/29)
+- [Profile Picture Uploads](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/29)
 
 User Profile Building:
-[User Profile Back End](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/26)
-[User Profile Front End](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/25)
-[Populate User Profile Screen](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/31)
+- [User Profile Back End](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/26)
+- [User Profile Front End](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/25)
+- [Populate User Profile Screen](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/31)
+
 
 
 _Summary:_
