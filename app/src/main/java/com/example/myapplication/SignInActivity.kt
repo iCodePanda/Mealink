@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -22,7 +23,7 @@ import com.google.firebase.auth.auth
 private lateinit var auth: FirebaseAuth
 
 @Composable
-fun SignInScreen() {
+fun SignInScreen(navController: NavController) {
     auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -41,7 +42,7 @@ fun SignInScreen() {
             )
             SignInEmailField(email = email, onEmailChange = { email = it })
             SignInPasswordField(password = password, onPasswordChange = { password = it })
-            SignInButton(email, password)
+            SignInButton(email, password, navController)
         }
     }
 }
@@ -67,23 +68,32 @@ fun SignInPasswordField(password: String, onPasswordChange: (String) -> Unit) {
 }
 
 @Composable
-fun SignInButton(email: String, password: String) {
+fun SignInButton(email: String, password: String, navController: NavController) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 25.dp),
         text = { Text("Log In") },
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
-        onClick = { SignIn(email, password, context) },
+        onClick = {
+            val emailFormat = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
+            if (!email.matches(emailFormat)) {
+                Toast.makeText(context, "Invalid Email", Toast.LENGTH_SHORT).show()
+            } else if (password == "") {
+                Toast.makeText(context, "Please enter a password", Toast.LENGTH_SHORT).show()
+            } else {
+                signIn(email, password, context, navController) }
+            },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
     )
 }
 
-fun SignIn(email: String, password: String, context: Context) {
+fun signIn(email: String, password: String, context: Context,navController: NavController) {
     auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
         if (task.isSuccessful) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithEmail:success")
+//            navController.navigate(Screens.Profile.route)
             val intent = Intent(context, UserProfileActivity::class.java)
             context.startActivity(intent, null)
         } else {
