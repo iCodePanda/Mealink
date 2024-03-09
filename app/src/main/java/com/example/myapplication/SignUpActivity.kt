@@ -10,12 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,49 +30,32 @@ import com.google.firebase.firestore.firestore
 private lateinit var auth: FirebaseAuth
 val db = Firebase.firestore
 
-class SignUpActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        auth = Firebase.auth
-
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_up)
-        setContent {
-            MyApplicationTheme {
-                Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
-                    Column(
-                        modifier = Modifier.padding(top = 50.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        SubTitle()
-                        Spacer(modifier = Modifier.padding(top = 35.dp))
-                        SignUpScreen()
-                    }
-                }
-            }
-        }
-    }
-}
-
 @Composable
 fun SignUpScreen() {
+    auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var type by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
 
-    EmailField(email = email, onEmailChange = { email = it })
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-    PasswordField(password = password, onPasswordChange = { password = it })
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-    NameField(name = name, onNameChange = { name = it })
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-    TypeField(type = type, onTypeChange = { type = it })
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-    LocationField(location = location, onLocationChange = { location = it })
-    Spacer(modifier = Modifier.padding(top = 20.dp))
-
-    SignUpButton(email, password, name, type, location)
+    MyApplicationTheme {
+        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+            Column(
+                modifier = Modifier.padding(top = 50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                SubTitle()
+                EmailField(email = email, onEmailChange = { email = it })
+                PasswordField(password = password, onPasswordChange = { password = it })
+                NameField(name = name, onNameChange = { name = it })
+                TypeField(type = type, onTypeChange = { type = it })
+                LocationField(location = location, onLocationChange = { location = it })
+                SignUpButton(email, password, name, type, location)
+            }
+        }
+    }
 }
 
 @Composable

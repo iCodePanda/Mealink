@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import Screens
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -45,7 +46,13 @@ fun AppNavigation() {
                 Home(navController)
             }
             composable(Screens.Login.route) {
-                SignInScreen()
+                SignInScreen(navController)
+            }
+            composable(Screens.Signup.route) {
+                SignUpScreen()
+            }
+            composable(Screens.Profile.route) {
+//                ProfileScreen()
             }
         }
     }
@@ -60,18 +67,18 @@ fun Home(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(25.dp),
         ) {
-            title()
-            mainPageImage()
-            buttonGoogle()
-            buttonEmail(navController)
-            notMember()
-            buttonCreateAccount()
+            Title()
+            MainPageImage()
+            ButtonGoogle()
+            ButtonEmail(navController)
+            NotMember()
+            ButtonCreateAccount(navController)
         }
     }
 }
 
 @Composable
-fun buttonGoogle() {
+fun ButtonGoogle() {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         modifier = Modifier
@@ -94,7 +101,7 @@ fun buttonGoogle() {
 }
 
 @Composable
-fun buttonEmail(navController: NavController) {
+fun ButtonEmail(navController: NavController) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         modifier = Modifier
@@ -117,7 +124,7 @@ fun buttonEmail(navController: NavController) {
 }
 
 @Composable
-fun buttonCreateAccount() {
+fun ButtonCreateAccount(navController: NavController) {
     val context = LocalContext.current
     println(context)
     ExtendedFloatingActionButton(
@@ -127,13 +134,13 @@ fun buttonCreateAccount() {
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Create an Account!") },
-        onClick = { startActivity(context, Intent(context, SignUpActivity::class.java), null) },
+        onClick = { navController.navigate(Screens.Signup.route) },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
     )
 }
 
 @Composable
-fun notMember() {
+fun NotMember() {
     Text(
         "Not a member yet?",
         style = TextStyle(
@@ -146,7 +153,7 @@ fun notMember() {
     )
 }
 @Composable
-fun title() {
+fun Title() {
     Text(
         "Mealink",
         color = Color(0xFF00BF81),
@@ -154,7 +161,7 @@ fun title() {
     )
 }
 @Composable
-fun mainPageImage() {
+fun MainPageImage() {
     Image(
         painter = painterResource(id = R.drawable.undraw_breakfast_psiw),
         contentDescription = null,
