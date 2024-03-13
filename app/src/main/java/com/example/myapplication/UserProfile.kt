@@ -2,11 +2,13 @@ package com.example.myapplication
 import android.content.ContentValues.TAG
 import androidx.compose.runtime.Composable
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
@@ -105,11 +107,16 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .padding(vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        accountType(type)
+        Row{
+            Spacer(Modifier.weight(1f))
+            signout(name)
+        }
+        accountHeader(type, name)
         userPfp(imageURI)
         nameField(name = name, onNameChange = {name = it})
         emailField(email = email, onEmailChange = {email = it})
@@ -153,9 +160,15 @@ fun LoadFailScreen() {
 }
 
 @Composable
-fun accountType(type: String) {
-    Text(text = "$type Account",
+fun accountHeader(type: String, name: String) {
+    var subHeader = if (type == "foodDonor") "Food Donor" else "Food Receiver"
+    Text(text = "Welcome $name!",
         style=MaterialTheme.typography.h4,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(top = 8.dp)
+    )
+    Text(text = "Manage Your $subHeader Account",
+        style=MaterialTheme.typography.h6,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(top = 8.dp)
     )
@@ -251,8 +264,9 @@ fun saveDetails(name: String, location: String) {
 
 @Composable
 fun createOfferButton(name: String) {
+    val context = LocalContext.current
     ExtendedFloatingActionButton(
-        onClick = {createOfferRedirect(name)},
+        onClick = {createOfferRedirect(name, context)},
         text = {Text("Create Offer")},
         backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
@@ -260,13 +274,16 @@ fun createOfferButton(name: String) {
     )
 }
 
-fun createOfferRedirect(name: String) {
+fun createOfferRedirect(name: String, context: Context) {
+    val intent = Intent(context, OfferCreation::class.java)
+    context.startActivity(intent, null)
 }
 
 @Composable
 fun searchOffersButton(name: String) {
+    val context = LocalContext.current
     ExtendedFloatingActionButton(
-        onClick = {searchOffersRedirect(name)},
+        onClick = {searchOffersRedirect(name, context)},
         text = {Text("Search Offers")},
         backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
@@ -274,5 +291,48 @@ fun searchOffersButton(name: String) {
     )
 }
 
-fun searchOffersRedirect(name: String) {
+fun searchOffersRedirect(name: String, context: Context) {
+    val intent = Intent(context, SearchOffers::class.java)
+    context.startActivity(intent, null)
+}
+
+@Composable
+fun signout(name: String) {
+    val context = LocalContext.current
+    ExtendedFloatingActionButton(
+        onClick = {signoutAction(name, context)},
+        text = {Text("Sign Out")},
+        backgroundColor = Color(0xFF00BF81),
+        elevation = FloatingActionButtonDefaults.elevation(0.dp),
+        contentColor = Color(0xFFFFFFFF),
+    )
+}
+
+fun signoutAction(name: String, context: Context) {
+    val user = FirebaseAuth.getInstance()
+    user.signOut()
+
+    val userCheck = FirebaseAuth.getInstance().getCurrentUser();
+    if (userCheck == null) {
+        // User is signed out
+        Log.d(TAG, "signOut:success")
+        // navController.navigate(Screens.Profile.route)
+        val intent = Intent(context, MainActivity::class.java)
+        context.startActivity(intent, null)
+
+        Toast.makeText(
+            context,
+            "Signed Out $name Successfully.",
+            Toast.LENGTH_SHORT,
+        ).show()
+
+    } else {
+        // User is not signed out
+        Log.w(TAG, "signOut:failure")
+        Toast.makeText(
+            context,
+            "Sign Out failed.",
+            Toast.LENGTH_SHORT,
+        ).show()
+    }
 }
