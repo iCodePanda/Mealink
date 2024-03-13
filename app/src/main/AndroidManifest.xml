@@ -39,6 +39,8 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false" />
         <activity android:name=".UserProfileActivity"/>
+        <activity android:name=".OfferCreation"/>
+        <activity android:name=".SearchOffers"/>
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyAlNMKis8rVrPYLLSh9Gg_X-_iDhDTqCmM"/>
