@@ -115,7 +115,11 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
         emailField(email = email, onEmailChange = {email = it})
         locationField(location = location, onLocationChange = {location = it})
         saveButton(name, location)
-        createOfferButton(name)
+        if (type == "foodDonor") {
+            createOfferButton(name)
+        } else {
+            searchOffersButton(name)
+        }
     }
 }
 @Composable
@@ -248,7 +252,7 @@ fun saveDetails(name: String, location: String) {
 @Composable
 fun createOfferButton(name: String) {
     ExtendedFloatingActionButton(
-        onClick = {redirect(name)},
+        onClick = {createOfferRedirect(name)},
         text = {Text("Create Offer")},
         backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
@@ -256,5 +260,19 @@ fun createOfferButton(name: String) {
     )
 }
 
-fun redirect(name: String) {
+fun createOfferRedirect(name: String) {
+}
+
+@Composable
+fun searchOffersButton(name: String) {
+    ExtendedFloatingActionButton(
+        onClick = {searchOffersRedirect(name)},
+        text = {Text("Search Offers")},
+        backgroundColor = Color(0xFF00BF81),
+        elevation = FloatingActionButtonDefaults.elevation(0.dp),
+        contentColor = Color(0xFFFFFFFF),
+    )
+}
+
+fun searchOffersRedirect(name: String) {
 }
