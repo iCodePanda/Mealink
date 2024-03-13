@@ -115,6 +115,7 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
         emailField(email = email, onEmailChange = {email = it})
         locationField(location = location, onLocationChange = {location = it})
         saveButton(name, location)
+        createOfferButton()
     }
 }
 @Composable
@@ -242,4 +243,19 @@ fun saveDetails(name: String, location: String) {
     auth.currentUser?.let { db.collection("users").document(it.uid)
         .update("name", name, "location", location)
     }
+}
+
+@Composable
+fun createOfferButton() {
+    ExtendedFloatingActionButton(
+        onClick = {redirect()},
+        text = {Text("+")},
+        backgroundColor = Color(0x339CFF),
+        elevation = FloatingActionButtonDefaults.elevation(0.dp),
+        contentColor = Color(0xFFFFFFFF),
+    )
+}
+
+fun redirect() {
+    return
 }
