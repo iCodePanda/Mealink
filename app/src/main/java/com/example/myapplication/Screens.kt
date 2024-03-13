@@ -1,6 +1,6 @@
-sealed class Screens(val route : String) {
-    object Login : Screens("login")
-    object Home : Screens("home")
-    object Signup : Screens("signup")
-    object Profile : Screens("profile")
+sealed class Screens(val route : String, val label : String) {
+    object Login : Screens("login", "Login")
+    object Home : Screens("home", "Home")
+    object Signup : Screens("signup", "Signup")
+    object Profile : Screens("profile", "Profile")
 }
