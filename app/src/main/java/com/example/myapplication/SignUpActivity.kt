@@ -21,6 +21,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -31,7 +32,7 @@ private lateinit var auth: FirebaseAuth
 val db = Firebase.firestore
 
 @Composable
-fun SignUpScreen() {
+fun SignUpScreen(navController: NavController) {
     auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -53,6 +54,7 @@ fun SignUpScreen() {
                 TypeField(type = type, onTypeChange = { type = it })
                 LocationField(location = location, onLocationChange = { location = it })
                 SignUpButton(email, password, name, type, location)
+                NavBar(navController)
             }
         }
     }
