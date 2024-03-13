@@ -115,7 +115,7 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
         emailField(email = email, onEmailChange = {email = it})
         locationField(location = location, onLocationChange = {location = it})
         saveButton(name, location)
-        createOfferButton()
+        createOfferButton(name)
     }
 }
 @Composable
@@ -246,16 +246,15 @@ fun saveDetails(name: String, location: String) {
 }
 
 @Composable
-fun createOfferButton() {
+fun createOfferButton(name: String) {
     ExtendedFloatingActionButton(
-        onClick = {redirect()},
-        text = {Text("+")},
-        backgroundColor = Color(0x339CFF),
+        onClick = {redirect(name)},
+        text = {Text("Create Offer")},
+        backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
         contentColor = Color(0xFFFFFFFF),
     )
 }
 
-fun redirect() {
-    return
+fun redirect(name: String) {
 }
