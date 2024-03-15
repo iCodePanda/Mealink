@@ -87,7 +87,7 @@ fun ButtonGoogle() {
         backgroundColor = Color(0xFFFFFFFF),
         text = { Text("Continue with Google") },
 
-        onClick = { startActivity(context, Intent(context, MapsActivity::class.java), null) },
+        onClick = {  },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.google),

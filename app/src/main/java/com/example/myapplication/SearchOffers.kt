@@ -15,10 +15,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SearchBarColors
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -30,9 +34,11 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import coil.compose.*
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.google.android.material.search.SearchBar
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
@@ -58,6 +64,9 @@ fun searchOffersScreen() {
     Column {
         BrowseOffers()
         CustomToggle(selectedOption = selectedOption, onOptionSelected = { selectedOption = it })
+        if (selectedOption == "Using Maps") {
+            MapComposable()
+        }
     }
 
 
