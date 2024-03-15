@@ -46,19 +46,20 @@ class SearchOffers: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApplicationTheme {
-                SearchOffersScreen()
+                searchOffersScreen()
             }
         }
     }
 }
 
 @Composable
-fun SearchOffersScreen() {
+fun searchOffersScreen() {
     var selectedOption by remember { mutableStateOf("Using Search Bar") }
     Column {
         BrowseOffers()
-        CustomToggle()
+        CustomToggle(selectedOption = selectedOption, onOptionSelected = { selectedOption = it })
     }
+
 
 }
 @Composable
@@ -74,13 +75,13 @@ fun BrowseOffers() {
 }
 
 @Composable
-fun CustomToggle() {
+fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
 
-    var selectedOption by remember { mutableStateOf("Using Search Bar") }
+
     Row(modifier = Modifier.fillMaxWidth()) {
         // Personal Account Button
         OutlinedButton(
-            onClick = { selectedOption = "Using Search Bar" },
+            onClick = { onOptionSelected("Using Search Bar") },
             modifier = Modifier.weight(1f),
             // Remove gap by setting border to null and elevation to 0.dp
             border = if (selectedOption == "Using Search Bar") BorderStroke(1.dp, Color(0xFF00BF81)) else null,
@@ -95,7 +96,7 @@ fun CustomToggle() {
 
         // Business Account Button
         OutlinedButton(
-            onClick = { selectedOption = "Using Maps" },
+            onClick = { onOptionSelected("Using Maps") },
             modifier = Modifier.weight(1f),
             // Remove gap by setting border to null and elevation to 0.dp
             border = if (selectedOption == "Using Maps") BorderStroke(1.dp, Color(0xFF00BF81)) else null,
