@@ -36,8 +36,13 @@ import androidx.navigation.compose.rememberNavController
 import com.google.firebase.components.Component
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Label
 import org.checkerframework.common.subtyping.qual.Bottom
+import androidx.compose.ui.graphics.vector.*
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.*
+
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -82,7 +87,7 @@ fun Home(navController: NavController) {
             ButtonEmail(navController)
             NotMember()
             ButtonCreateAccount(navController)
-            NavBar(navController)
+            Bruh(navController)
         }
     }
 }
@@ -185,15 +190,20 @@ fun NavBar(navController: NavController) {
         Screens.Signup,
     )
     BottomNavigation(
-        contentColor = Color.Black
+        contentColor = Color.Yellow,
+        backgroundColor = Color.White
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
         items.forEach { item ->
             BottomNavigationItem(
-                icon = { Icon(painterResource(id = R.drawable.undraw_breakfast_psiw), contentDescription = null) },
-                label = { Text(text = item.label,
-                    fontSize = 9.sp) },
+                modifier = Modifier.size(100.dp),
+                icon = { Icon(
+                    painter = painterResource(id = R.drawable.account_circle), contentDescription = null) },
+                label = {
+                    Text(text = item.label,
+//                    fontSize = 9.sp
+                ) },
                 selectedContentColor = Color.Black,
                 unselectedContentColor = Color.Black.copy(0.4f),
                 alwaysShowLabel = true,
@@ -214,3 +224,11 @@ fun NavBar(navController: NavController) {
     }
 }
 
+@Composable
+fun Bruh(navController: NavController) {
+    Scaffold(
+        bottomBar = {
+            NavBar(navController)
+        },
+    ) { }
+}

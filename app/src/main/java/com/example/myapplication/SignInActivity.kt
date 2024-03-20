@@ -43,7 +43,7 @@ fun SignInScreen(navController: NavController) {
             SignInEmailField(email = email, onEmailChange = { email = it })
             SignInPasswordField(password = password, onPasswordChange = { password = it })
             SignInButton(email, password, navController)
-            NavBar(navController)
+            Bruh(navController)
         }
     }
 }
