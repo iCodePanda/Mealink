@@ -1,11 +1,7 @@
 package com.example.myapplication
 import android.content.ContentValues.TAG
-import androidx.compose.runtime.Composable
-import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -13,29 +9,375 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.layout.ContentScale
-import com.google.firebase.auth.FirebaseAuth
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.*
+import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
+import java.text.SimpleDateFormat
+import com.google.firebase.firestore.firestore
+import java.io.File
+import java.util.Date
+import kotlin.io.path.createTempFile
+import kotlin.io.path.outputStream
 
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
+
 class OfferCreation: AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        storage = Firebase.storage
+        auth = Firebase.auth
+        setContent {
+            OfferCreateForm()
+        }
+    }
+}
+
+@Composable
+fun OfferCreateForm() {
+    var name by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var portionCount by remember { mutableStateOf("") }
+    var selectedDate by remember { mutableLongStateOf(0L) }
+    var selectedTime by remember { mutableLongStateOf(0L) }
+    var selectedImageFile by remember { mutableStateOf("") }
+
+    MyApplicationTheme {
+        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+            Column(
+                modifier = Modifier.padding(top = 50.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                Heading()
+                ItemName(name, onNameChange = { name = it })
+                Description(description, onDescChange = { description = it })
+                PortionCount(portionCount, onCountChange = { portionCount = it })
+                DatePicker(onDateChange = {
+                    selectedDate = it
+                    println(selectedDate)
+                })
+                TimePicker(onTimeChange = {
+                    selectedTime = it
+                    println(selectedTime)
+                })
+                ItemPicture(imageURI = "", onImageSelected = { selectedImageFile = it })
+                AddOfferButton(
+                    name,
+                    description,
+                    portionCount,
+                    selectedDate + selectedTime + 14400000L,
+                    selectedImageFile
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun Heading() {
+    Text(
+        "Create Food Listing",
+        color = Color(0xFF00BF81),
+        fontSize = 30.sp
+    )
+}
+
+@Composable
+fun ItemName(name: String, onNameChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = name,
+        onValueChange = onNameChange,
+        label = { Text("Item Name") }
+    )
+}
+
+@Composable
+fun Description(description: String, onDescChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = description,
+        onValueChange = onDescChange,
+        label = { Text("Description") }
+    )
+}
+
+@Composable
+fun PortionCount(portionCount: String, onCountChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = portionCount,
+        onValueChange = onCountChange,
+        label = { Text("Portion Count") }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePicker(onDateChange: (Long) -> Unit) {
+    val datePickerState = rememberDatePickerState()
+    var showDatePicker by remember { mutableStateOf(false) }
+    val formatter = SimpleDateFormat("dd/MM/yyyy")
+    var tz = java.util.TimeZone.getTimeZone("GMT")
+    formatter.timeZone = tz
+
+    OutlinedTextField(
+        value = if (datePickerState.selectedDateMillis != null) {
+            formatter.format(datePickerState.selectedDateMillis)
+        }
+        else {
+             ""
+             },
+        onValueChange = { println("changed date") },
+        label = { Text("Available Date", color = Color.DarkGray) },
+        enabled = false,
+        modifier = Modifier.clickable { showDatePicker = true },
+    )
+
+    // date picker component
+    if (showDatePicker) {
+        DatePickerDialog(
+            onDismissRequest = { println("window closed") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        datePickerState.selectedDateMillis?.let { onDateChange(it) }
+                        showDatePicker = false
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDatePicker = false
+                    }
+                ) { Text("Cancel") }
+            }
+        )
+        {
+            DatePicker(state = datePickerState)
+        }
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePicker(onTimeChange: (Long) -> Unit) {
+    val timePickerState = rememberTimePickerState()
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    OutlinedTextField(
+        value = (timePickerState.hour.toString() + ":" + timePickerState.minute.toString()),
+        onValueChange = { println("time changed") },
+        label = { Text("Available Time", color = Color.DarkGray) },
+        enabled = false,
+        modifier = Modifier.clickable { showTimePicker = true },
+    )
+
+    // date picker component
+    if (showTimePicker) {
+        TimePickerDialog(
+            onDismissRequest = { println("window closed") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showTimePicker = false
+                        println(timePickerState.hour)
+                        println(timePickerState.minute)
+                        onTimeChange(timePickerState.hour * 3600000L + timePickerState.minute * 60000L)
+                    }
+                ) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showTimePicker = false
+                    }
+                ) { Text("Cancel") }
+            }
+        )
+        {
+            TimePicker(state = timePickerState)
+        }
+    }
+}
+
+@Composable
+fun TimePickerDialog(
+    title: String = "Select Time",
+    onDismissRequest: () -> Unit,
+    confirmButton: @Composable (() -> Unit),
+    dismissButton: @Composable (() -> Unit)? = null,
+    content: @Composable () -> Unit,
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+    ) {
+        Surface(modifier = Modifier.width(IntrinsicSize.Min).height(IntrinsicSize.Min)) {
+            Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp), text = title,)
+                content()
+                Row(modifier = Modifier.height(40.dp).fillMaxWidth()) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    dismissButton?.invoke()
+                    confirmButton()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ItemPicture(imageURI: String, onImageSelected: (String) -> Unit) {
+    var pfp: String? by remember { mutableStateOf(imageURI) }
+    val painter = rememberAsyncImagePainter(
+        if (pfp.isNullOrEmpty()) {
+            R.drawable.undraw_breakfast_psiw
+            // default pfp
+        } else {
+            pfp
+        }
+    )
+
+    var storageRef = storage.reference
+    var photoUri: Uri? by remember { mutableStateOf(null) }
+    val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        photoUri = uri
+        val inputStream = context.contentResolver.openInputStream(photoUri!!)
+        val fileName = "${System.currentTimeMillis()}"
+        val imageRef = storageRef.child(fileName)
+        pfp = photoUri.toString()
+        println(pfp)
+        val tempFile = createTempFile(suffix = ".jpg")
+        inputStream?.use { input ->
+            tempFile.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        onImageSelected(tempFile.toString())
+//        var uploadTask = imageRef.putStream(inputStream!!)
+//
+//        uploadTask.addOnFailureListener {
+//            println("upload failed")
+//        }.addOnSuccessListener { taskSnapshot ->
+//            println("upload success")
+//            pfp = photoUri.toString()
+//        }
+    }
+
+    Column (
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Card (
+            ){
+            Image(
+                painter = painter,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clickable {
+                        launcher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly
+                            )
+                        )
+                    }
+            )
+        }
+        Text(text = "Tap to upload image", Modifier.padding(top = 8.dp))
+    }
+}
+
+@Composable
+fun AddOfferButton(
+    name: String,
+    description: String,
+    portionCount: String,
+    availableTime: Long,
+    selectedImageFile: String
+) {
+    val context = LocalContext.current
+    val db = Firebase.firestore
+    var storageRef = storage.reference
+
+    ExtendedFloatingActionButton(
+        onClick = {
+            println(selectedImageFile)
+            val user = auth.currentUser
+            val offerTableEntry = hashMapOf(
+                "available" to true,
+                "availableTime" to Date(availableTime),
+                "claimedBy" to null,
+                "description" to description,
+                "imageFilePath" to "",
+                "name" to name,
+                "offeredBy" to db.document("users/" + (user?.uid ?: "")),
+                "portionCount" to portionCount.toInt()
+            )
+            if (user != null) {
+                println(user.uid)
+            }
+            println(offerTableEntry)
+            selectedImageFile?.let { path ->
+                val file = File(path)
+                val fileName = "${System.currentTimeMillis()}.jpg"
+                val imageRef = storageRef.child(fileName)
+
+                val uri = Uri.fromFile(file)
+                val uploadTask = imageRef.putFile(uri)
+
+                uploadTask.addOnSuccessListener {
+                    offerTableEntry["imageFilePath"] = fileName
+                    db.collection("offers")
+                        .add(offerTableEntry)
+                        .addOnSuccessListener { documentReference ->
+                            Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+                            val intent = Intent(context, UserProfileActivity::class.java)
+                            context.startActivity(intent, null)
+                            Toast.makeText(context, "Offer Created!", Toast.LENGTH_SHORT).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(TAG, "Error adding document", e)
+                            Toast.makeText(context, "Failed to create offer", Toast.LENGTH_SHORT).show()
+                        }
+                }.addOnFailureListener { exception ->
+                    Log.e(TAG, "Error uploading image", exception)
+                    Toast.makeText(context, "Failed to create offer", Toast.LENGTH_SHORT).show()
+                }
+            }
+        },
+        text = {Text("Create Offer")},
+        backgroundColor = Color(0xFF00BF81),
+        elevation = FloatingActionButtonDefaults.elevation(0.dp),
+        contentColor = Color(0xFFFFFFFF),
+    )
 }
