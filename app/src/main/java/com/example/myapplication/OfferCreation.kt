@@ -79,11 +79,9 @@ fun OfferCreateForm() {
                 PortionCount(portionCount, onCountChange = { portionCount = it })
                 DatePicker(onDateChange = {
                     selectedDate = it
-                    println(selectedDate)
                 })
                 TimePicker(onTimeChange = {
                     selectedTime = it
-                    println(selectedTime)
                 })
                 ItemPicture(imageURI = "", onImageSelected = { selectedImageFile = it })
                 AddOfferButton(
@@ -156,7 +154,6 @@ fun DatePicker(onDateChange: (Long) -> Unit) {
         modifier = Modifier.clickable { showDatePicker = true },
     )
 
-    // date picker component
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { println("window closed") },
@@ -197,7 +194,6 @@ fun TimePicker(onTimeChange: (Long) -> Unit) {
         modifier = Modifier.clickable { showTimePicker = true },
     )
 
-    // date picker component
     if (showTimePicker) {
         TimePickerDialog(
             onDismissRequest = { println("window closed") },
@@ -205,8 +201,6 @@ fun TimePicker(onTimeChange: (Long) -> Unit) {
                 TextButton(
                     onClick = {
                         showTimePicker = false
-                        println(timePickerState.hour)
-                        println(timePickerState.minute)
                         onTimeChange(timePickerState.hour * 3600000L + timePickerState.minute * 60000L)
                     }
                 ) { Text("OK") }
@@ -225,6 +219,7 @@ fun TimePicker(onTimeChange: (Long) -> Unit) {
     }
 }
 
+// got this time picker dialog from here: https://medium.com/@droidvikas/exploring-date-and-time-pickers-compose-bytes-120e75349797
 @Composable
 fun TimePickerDialog(
     title: String = "Select Time",
@@ -241,7 +236,7 @@ fun TimePickerDialog(
     ) {
         Surface(modifier = Modifier.width(IntrinsicSize.Min).height(IntrinsicSize.Min)) {
             Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp), text = title,)
+                Text(modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp), text = title)
                 content()
                 Row(modifier = Modifier.height(40.dp).fillMaxWidth()) {
                     Spacer(modifier = Modifier.weight(1f))
@@ -265,16 +260,12 @@ fun ItemPicture(imageURI: String, onImageSelected: (String) -> Unit) {
         }
     )
 
-    var storageRef = storage.reference
     var photoUri: Uri? by remember { mutableStateOf(null) }
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         photoUri = uri
         val inputStream = context.contentResolver.openInputStream(photoUri!!)
-        val fileName = "${System.currentTimeMillis()}"
-        val imageRef = storageRef.child(fileName)
         pfp = photoUri.toString()
-        println(pfp)
         val tempFile = createTempFile(suffix = ".jpg")
         inputStream?.use { input ->
             tempFile.outputStream().use { output ->
@@ -282,22 +273,13 @@ fun ItemPicture(imageURI: String, onImageSelected: (String) -> Unit) {
             }
         }
         onImageSelected(tempFile.toString())
-//        var uploadTask = imageRef.putStream(inputStream!!)
-//
-//        uploadTask.addOnFailureListener {
-//            println("upload failed")
-//        }.addOnSuccessListener { taskSnapshot ->
-//            println("upload success")
-//            pfp = photoUri.toString()
-//        }
     }
 
     Column (
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Card (
-            ){
+        Card {
             Image(
                 painter = painter,
                 contentDescription = null,
@@ -331,7 +313,6 @@ fun AddOfferButton(
 
     ExtendedFloatingActionButton(
         onClick = {
-            println(selectedImageFile)
             val user = auth.currentUser
             val offerTableEntry = hashMapOf(
                 "available" to true,
@@ -343,10 +324,6 @@ fun AddOfferButton(
                 "offeredBy" to db.document("users/" + (user?.uid ?: "")),
                 "portionCount" to portionCount.toInt()
             )
-            if (user != null) {
-                println(user.uid)
-            }
-            println(offerTableEntry)
             selectedImageFile?.let { path ->
                 val file = File(path)
                 val fileName = "${System.currentTimeMillis()}.jpg"
