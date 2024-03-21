@@ -63,14 +63,13 @@ fun AppNavigation() {
                 SignInScreen(navController)
             }
             composable(Screens.Signup.route) {
-                SignUpScreen(navController)
+                SignUpScreen()
             }
             composable(Screens.Profile.route) {
-//                ProfileScreen()
+                UserProfileScreen()
             }
         }
     }
-
 }
 
 @Composable
@@ -84,10 +83,9 @@ fun Home(navController: NavController) {
             Title()
             MainPageImage()
             ButtonGoogle()
-            ButtonEmail(navController)
+            ButtonEmail { navController.navigate(Screens.Login.route) }
             NotMember()
-            ButtonCreateAccount(navController)
-            Bruh(navController)
+            ButtonCreateAccount { navController.navigate(Screens.Signup.route) }
         }
     }
 }
@@ -116,8 +114,7 @@ fun ButtonGoogle() {
 }
 
 @Composable
-fun ButtonEmail(navController: NavController) {
-    val context = LocalContext.current
+fun ButtonEmail(navigateTo: () -> Unit) {
     ExtendedFloatingActionButton(
         modifier = Modifier
             .fillMaxWidth()
@@ -125,7 +122,7 @@ fun ButtonEmail(navController: NavController) {
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Login with Email") },
-        onClick = { navController.navigate(Screens.Login.route) },
+        onClick = { navigateTo() },
         icon = {
             Icon(
                 painter = painterResource(id = R.drawable.email),
@@ -139,7 +136,7 @@ fun ButtonEmail(navController: NavController) {
 }
 
 @Composable
-fun ButtonCreateAccount(navController: NavController) {
+fun ButtonCreateAccount(navigateTo: () -> Unit) {
     val context = LocalContext.current
     println(context)
     ExtendedFloatingActionButton(
@@ -149,7 +146,7 @@ fun ButtonCreateAccount(navController: NavController) {
         backgroundColor = Color(0xFF00BF81),
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Create an Account!") },
-        onClick = { navController.navigate(Screens.Signup.route) },
+        onClick = { navigateTo() },
         elevation = FloatingActionButtonDefaults.elevation(8.dp)
     )
 }
@@ -187,7 +184,7 @@ fun MainPageImage() {
 fun NavBar(navController: NavController) {
     val items = listOf(
         Screens.Login,
-        Screens.Signup,
+        Screens.Profile,
     )
     BottomNavigation(
         contentColor = Color.Yellow,
@@ -198,12 +195,17 @@ fun NavBar(navController: NavController) {
         items.forEach { item ->
             BottomNavigationItem(
                 modifier = Modifier.size(100.dp),
-                icon = { Icon(
-                    painter = painterResource(id = R.drawable.account_circle), contentDescription = null) },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.account_circle), contentDescription = null
+                    )
+                },
                 label = {
-                    Text(text = item.label,
+                    Text(
+                        text = item.label,
 //                    fontSize = 9.sp
-                ) },
+                    )
+                },
                 selectedContentColor = Color.Black,
                 unselectedContentColor = Color.Black.copy(0.4f),
                 alwaysShowLabel = true,
@@ -211,8 +213,8 @@ fun NavBar(navController: NavController) {
                 onClick = {
                     navController.navigate(item.route) {
 //                        navController.graph.startDestinationRoute?.let { route ->
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
 //                            }
                         }
                         launchSingleTop = true
@@ -225,7 +227,7 @@ fun NavBar(navController: NavController) {
 }
 
 @Composable
-fun Bruh(navController: NavController) {
+fun NavBarWrapper(navController: NavController) {
     Scaffold(
         bottomBar = {
             NavBar(navController)

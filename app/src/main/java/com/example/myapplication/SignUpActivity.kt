@@ -32,7 +32,7 @@ private lateinit var auth: FirebaseAuth
 val db = Firebase.firestore
 
 @Composable
-fun SignUpScreen(navController: NavController) {
+fun SignUpScreen() {
     auth = Firebase.auth
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -54,7 +54,6 @@ fun SignUpScreen(navController: NavController) {
                 TypeField(type = type, onTypeChange = { type = it })
                 LocationField(location = location, onLocationChange = { location = it })
                 SignUpButton(email, password, name, type, location)
-                NavBar(navController)
             }
         }
     }
