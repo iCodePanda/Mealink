@@ -38,64 +38,55 @@ import com.google.firebase.storage.storage
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
 
-class UserProfileActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        auth = Firebase.auth
-        storage = Firebase.storage
-        var storageRef = storage.reference
-        val user = auth.currentUser
+@Composable
+fun UserProfileScreen() {
+    auth = Firebase.auth
+    storage = Firebase.storage
+    var storageRef = storage.reference
+    val user = auth.currentUser
 
-        if (user != null) {
-            println(user.uid)
-        }
-        val docRef = user?.let { db.collection("users").document(it.uid) }
-        docRef?.get()?.addOnSuccessListener { document ->
-            if (document != null) {
-                Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-                var imageURI = ""
-                auth.currentUser?.let {
-                    storageRef.child(it.uid).downloadUrl.addOnSuccessListener {it ->
+    var isLoading by remember { mutableStateOf(true) }
+    var failed by remember { mutableStateOf(false) }
+    var userInfo by remember { mutableStateOf<Map<String, Any>?>(null) }
+    var imageURI by remember { mutableStateOf("") }
+
+    val docRef = user?.let { db.collection("users").document(it.uid) }
+    docRef?.get()?.addOnSuccessListener { document ->
+        if (document != null) {
+            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+            userInfo = document.data
+            auth.currentUser?.let {
+                storageRef.child(it.uid).downloadUrl.addOnSuccessListener {it ->
+                    if (it != null) {
                         imageURI = it.toString()
-                        setContent {
-                            ProfileScreen(
-                                document.data?.get("name").toString(),
-                                auth.currentUser?.email.toString(),
-                                document.data?.get("location").toString(),
-                                document.data?.get("type").toString(),
-                                imageURI
-                            )
-                        }
-                    }.addOnFailureListener {
-                        // Handle any errors
-                        println("failed")
-                        setContent {
-                            ProfileScreen(
-                                document.data?.get("name").toString(),
-                                auth.currentUser?.email.toString(),
-                                document.data?.get("location").toString(),
-                                document.data?.get("type").toString(),
-                                imageURI
-                            )
-                        }
+                        isLoading = false
                     }
-                }
-            } else {
-                Log.d(TAG, "No such document")
-                setContent {
-                    LoadFailScreen()
+                }.addOnFailureListener {
+                    isLoading = false
                 }
             }
-        }?.addOnFailureListener { exception ->
-            Log.d(TAG, "get failed with ", exception)
-            setContent {
-                LoadFailScreen()
-            }
+        } else {
+            Log.d(TAG, "No such document")
+            failed = true
         }
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_profile)
-        setContent {
-            LoadingScreen()
-        }
+    }?.addOnFailureListener { exception ->
+        Log.d(TAG, "get failed with ", exception)
+        failed = true
+    }
+
+
+    if (isLoading) {
+        LoadingScreen()
+    } else if (!failed) {
+        ProfileScreen(
+            userInfo?.get("name").toString(),
+            auth.currentUser?.email.toString(),
+            userInfo?.get("location").toString(),
+            userInfo?.get("type").toString(),
+            imageURI
+        )
+    } else {
+        LoadFailScreen()
     }
 }
 
