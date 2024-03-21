@@ -1,72 +1,95 @@
 package com.example.myapplication
-import android.accounts.Account
-import android.content.ContentValues.TAG
 import androidx.compose.runtime.Composable
-import android.content.Context
-import android.content.Intent
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SearchBarColors
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.Alignment
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
-import coil.compose.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.android.material.search.SearchBar
 import com.google.firebase.Firebase
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
+val firestore = FirebaseFirestore.getInstance()
+
+data class Offer(
+    val available: Boolean = false,
+    val availableTime: Timestamp? = null,
+    val claimedBy: String? = null,
+    val description: String = "",
+    val imageFilePath: String = "",
+    val name: String = "",
+    //val offeredBy: String = "",
+    val portionCount: Int = 0
+)
+
 class SearchOffers: AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        auth = Firebase.auth
+        storage = Firebase.storage
         setContent {
+            val offers = remember { mutableStateListOf<Offer>() }
+            val offersCollection = firestore.collection("offers")
+            offersCollection.get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        val offer = document.toObject(Offer::class.java)
+                        offers.add(offer)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    // Handle error
+                }
             MyApplicationTheme {
-                searchOffersScreen()
+                searchOffersScreen(offers = offers)
             }
         }
     }
 }
 
 @Composable
-fun searchOffersScreen() {
+fun searchOffersScreen(offers: List<Offer>) {
     var selectedOption by remember { mutableStateOf("Using Search Bar") }
+
     Column {
         BrowseOffers()
         CustomToggle(selectedOption = selectedOption, onOptionSelected = { selectedOption = it })
         if (selectedOption == "Using Maps") {
             MapComposable()
         }
+        OffersList(offers = offers)
     }
 
 
@@ -116,6 +139,83 @@ fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
                 text = "Using Maps",
                 color = if (selectedOption == "Using Maps") Color.White else Color(0xFF00BF81)
             )
+        }
+    }
+}
+
+@Composable
+fun OffersList(offers: List<Offer>) {
+    LazyColumn (
+        modifier = Modifier
+            .padding(vertical = 16.dp)
+            .padding(horizontal = 48.dp)
+
+    ){
+        items(offers) { offers ->
+            Box(
+                modifier = Modifier
+                    .padding(8.dp) // Add padding around each item for spacing
+                    .fillMaxWidth()
+            ) {
+                val imagePainter = painterResource(id = R.drawable.tims)
+                CustomImageButton(
+                    imagePainter = imagePainter,
+                    leftText = offers.description,
+                    rightText = offers.name,
+                    onButtonClick = {
+                        // When clicked.....
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomImageButton(
+    imagePainter: Painter,
+    leftText: String,
+    rightText: String,
+    onButtonClick: () -> Unit
+
+) {
+    Card(
+        shape = RoundedCornerShape(24.dp), // Rounded corners
+        modifier = Modifier.clickable(onClick = onButtonClick),
+        elevation = 4.dp,
+    ) {
+        Column {
+            // Image part
+            Image(
+                painter = imagePainter,
+                contentDescription = null, // Provide a proper content description for accessibility
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp) // Adjust the size as needed
+            )
+            // Text part with a white background
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White) // Pure white background for the text part
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = leftText,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Start,
+                    fontSize = 16.sp,
+                    color = Color.Black // Ensure text color is set for visibility against the white background
+                )
+                Text(
+                    text = rightText,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.End,
+                    fontSize = 16.sp,
+                    color = Color.Black // Ensure text color is set for visibility against the white background
+                )
+            }
         }
     }
 }

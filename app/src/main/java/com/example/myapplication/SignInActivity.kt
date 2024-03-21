@@ -28,7 +28,7 @@ fun SignInScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Surface(
-        modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)
+                modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)
     ) {
         Column(
             modifier = Modifier.padding(top = 50.dp),
