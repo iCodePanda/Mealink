@@ -105,18 +105,18 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
     ) {
         Row{
             Spacer(Modifier.weight(1f))
-            signout(name)
+            Signout(name)
         }
-        accountHeader(type, name)
-        userPfp(imageURI)
-        nameField(name = name, onNameChange = {name = it})
-        emailField(email = email, onEmailChange = {email = it})
-        locationField(location = location, onLocationChange = {location = it})
-        saveButton(name, location)
+        ProfileAccountHeader(type, name)
+        ProfileUserPfp(imageURI)
+        ProfileNameField(name = name, onNameChange = {name = it})
+        ProfileEmailField(email = email, onEmailChange = {email = it})
+        ProfileLocationField(location = location, onLocationChange = {location = it})
+        ProfileSaveButton(name, location)
         if (type == "foodDonor") {
-            createOfferButton(name)
+            CreateOfferButton(name)
         } else {
-            searchOffersButton(name)
+            SearchOffersButton(name)
         }
     }
 }
@@ -151,7 +151,7 @@ fun LoadFailScreen() {
 }
 
 @Composable
-fun accountHeader(type: String, name: String) {
+fun ProfileAccountHeader(type: String, name: String) {
     var subHeader = if (type == "foodDonor") "Food Donor" else "Food Receiver"
     Text(text = "Welcome $name!",
         style=MaterialTheme.typography.h4,
@@ -166,7 +166,7 @@ fun accountHeader(type: String, name: String) {
 }
 
 @Composable
-fun userPfp(imageURI: String) {
+fun ProfileUserPfp(imageURI: String) {
     var pfp: String? by remember { mutableStateOf(imageURI) }
     val painter = rememberAsyncImagePainter(
         if (pfp.isNullOrEmpty()) {
@@ -223,23 +223,23 @@ fun userPfp(imageURI: String) {
     }
 }
 @Composable
-fun nameField(name: String, onNameChange: (String) -> Unit) {
+fun ProfileNameField(name: String, onNameChange: (String) -> Unit) {
     OutlinedTextField(value = name, onValueChange = onNameChange, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
 }
 
 @Composable
-fun emailField(email: String, onEmailChange: (String) -> Unit) {
+fun ProfileEmailField(email: String, onEmailChange: (String) -> Unit) {
     OutlinedTextField(value = email, onValueChange = onEmailChange, label = {Text("Email")}, modifier = Modifier.fillMaxWidth(), enabled = false)
 }
 
 @Composable
-fun locationField(location: String, onLocationChange: (String) -> Unit) {
+fun ProfileLocationField(location: String, onLocationChange: (String) -> Unit) {
     OutlinedTextField(value = location, onValueChange = onLocationChange, label = {Text("Postal Code")}, modifier = Modifier.fillMaxWidth())
 }
 @Composable
-fun saveButton(name: String, location: String) {
+fun ProfileSaveButton(name: String, location: String) {
     ExtendedFloatingActionButton(
-        onClick = {saveDetails(name, location)},
+        onClick = {profileSaveDetails(name, location)},
         text = {Text("Save")},
         backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
@@ -247,14 +247,21 @@ fun saveButton(name: String, location: String) {
     )
 }
 
-fun saveDetails(name: String, location: String) {
+fun profileSaveDetails(name: String, location: String) {
+    val context = LocalContext.current
     auth.currentUser?.let { db.collection("users").document(it.uid)
-        .update("name", name, "location", location)
+        .update("name", name, "location", location).addOnSuccessListener {
+            Toast.makeText(
+                context,
+                "Successfully saved.",
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
     }
 }
 
 @Composable
-fun createOfferButton(name: String) {
+fun CreateOfferButton(name: String) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         onClick = {createOfferRedirect(name, context)},
@@ -271,7 +278,7 @@ fun createOfferRedirect(name: String, context: Context) {
 }
 
 @Composable
-fun searchOffersButton(name: String) {
+fun SearchOffersButton(name: String) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         onClick = {searchOffersRedirect(name, context)},
@@ -288,7 +295,7 @@ fun searchOffersRedirect(name: String, context: Context) {
 }
 
 @Composable
-fun signout(name: String) {
+fun Signout(name: String) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         onClick = {signoutAction(name, context)},
