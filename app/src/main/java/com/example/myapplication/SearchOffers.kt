@@ -1,4 +1,5 @@
 package com.example.myapplication
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -37,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.io.Serializable
 
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
@@ -51,7 +53,7 @@ data class Offer(
     val name: String = "",
     //val offeredBy: String = "",
     val portionCount: Int = 0
-)
+): Serializable
 
 class SearchOffers: AppCompatActivity() {
 
@@ -70,7 +72,7 @@ class SearchOffers: AppCompatActivity() {
                     }
                 }
                 .addOnFailureListener { exception ->
-                    // Handle error
+                    // should probably handle error
                 }
             MyApplicationTheme {
                 searchOffersScreen(offers = offers)
@@ -158,12 +160,19 @@ fun OffersList(offers: List<Offer>) {
                     .fillMaxWidth()
             ) {
                 val imagePainter = painterResource(id = R.drawable.tims)
+                val context = LocalContext.current
                 CustomImageButton(
                     imagePainter = imagePainter,
-                    leftText = offers.description,
-                    rightText = offers.name,
+                    leftText = offers.name,
+                    rightText = offers.availableTime?.toDate().toString(),
                     onButtonClick = {
-                        // When clicked.....
+                        val intent = Intent(context, OfferDetailActivity::class.java).apply {
+                            putExtra("offerName", offers.name)
+                            putExtra("offerDescription", offers.description)
+                            putExtra("offerImageFilePath", offers.imageFilePath)
+                            putExtra("offerPortionCount", offers.portionCount)
+                        }
+                        context.startActivity(intent)
                     },
                 )
             }
@@ -180,7 +189,7 @@ fun CustomImageButton(
 
 ) {
     Card(
-        shape = RoundedCornerShape(24.dp), // Rounded corners
+        shape = RoundedCornerShape(24.dp), // corners rounded
         modifier = Modifier.clickable(onClick = onButtonClick),
         elevation = 4.dp,
     ) {
@@ -188,16 +197,15 @@ fun CustomImageButton(
             // Image part
             Image(
                 painter = imagePainter,
-                contentDescription = null, // Provide a proper content description for accessibility
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(150.dp) // Adjust the size as needed
+                    .height(150.dp)
             )
-            // Text part with a white background
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White) // Pure white background for the text part
+                    .background(Color.White)
                     .padding(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -206,14 +214,14 @@ fun CustomImageButton(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Start,
                     fontSize = 16.sp,
-                    color = Color.Black // Ensure text color is set for visibility against the white background
+                    color = Color.Black
                 )
                 Text(
                     text = rightText,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
                     fontSize = 16.sp,
-                    color = Color.Black // Ensure text color is set for visibility against the white background
+                    color = Color.Black
                 )
             }
         }

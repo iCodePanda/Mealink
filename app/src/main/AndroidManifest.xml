@@ -31,7 +31,7 @@
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"
                   android:exported="false"
                   android:noHistory="true" />
-        <activity android:name=".MapsActivity"
+        <activity android:name=".OfferDetailActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"
                   android:exported="false" />
         <activity
