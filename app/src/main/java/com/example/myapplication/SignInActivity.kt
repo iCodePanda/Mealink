@@ -93,9 +93,7 @@ fun signIn(email: String, password: String, context: Context,navController: NavC
         if (task.isSuccessful) {
             // Sign in success, update UI with the signed-in user's information
             Log.d(TAG, "signInWithEmail:success")
-//            navController.navigate(Screens.Profile.route)
-            val intent = Intent(context, UserProfileActivity::class.java)
-            context.startActivity(intent, null)
+            navController.navigate(Screens.Profile.route)
         } else {
             // If sign in fails, display a message to the user.
             Log.w(TAG, "signInWithEmail:failure", task.exception)

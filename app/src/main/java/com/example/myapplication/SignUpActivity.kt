@@ -21,6 +21,7 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth

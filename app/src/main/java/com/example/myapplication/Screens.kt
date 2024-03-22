@@ -1,6 +1,10 @@
-sealed class Screens(val route : String) {
-    object Login : Screens("login")
-    object Home : Screens("home")
-    object Signup : Screens("signup")
-    object Profile : Screens("profile")
+import com.example.myapplication.R
+
+sealed class Screens(val route : String, val label : String, val icon : Int? = null) {
+    object Login : Screens("login", "Login")
+    object Home : Screens("home", "Home")
+    object Signup : Screens("signup", "Signup")
+    object Profile : Screens("profile", "Profile", R.drawable.account_circle)
+    object CreateOffers : Screens ("createOffer", "Create Offer", R.drawable.add)
+    object SearchOffers : Screens ("searchOffers", "Search Offers", R.drawable.search)
 }

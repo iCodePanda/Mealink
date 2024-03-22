@@ -1,6 +1,5 @@
 package com.example.myapplication
 import android.content.ContentValues.TAG
-import androidx.compose.runtime.Composable
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -28,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import coil.compose.*
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -38,95 +38,97 @@ import com.google.firebase.storage.storage
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
 
-class UserProfileActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        auth = Firebase.auth
-        storage = Firebase.storage
-        var storageRef = storage.reference
-        val user = auth.currentUser
+@Composable
+fun UserProfileScreen(navController: NavController) {
+    auth = Firebase.auth
+    storage = Firebase.storage
+    var storageRef = storage.reference
+    val user = auth.currentUser
 
-        if (user != null) {
-            println(user.uid)
-        }
-        val docRef = user?.let { db.collection("users").document(it.uid) }
-        docRef?.get()?.addOnSuccessListener { document ->
-            if (document != null) {
-                Log.d(TAG, "DocumentSnapshot data: ${document.data}")
-                var imageURI = ""
-                auth.currentUser?.let {
-                    storageRef.child(it.uid).downloadUrl.addOnSuccessListener {it ->
+    var isLoading by remember { mutableStateOf(true) }
+    var failed by remember { mutableStateOf(false) }
+    var userInfo by remember { mutableStateOf<Map<String, Any>?>(null) }
+    var imageURI by remember { mutableStateOf("") }
+
+    val docRef = user?.let { db.collection("users").document(it.uid) }
+    docRef?.get()?.addOnSuccessListener { document ->
+        if (document != null) {
+            Log.d(TAG, "DocumentSnapshot data: ${document.data}")
+            userInfo = document.data
+            auth.currentUser?.let {
+                storageRef.child(it.uid).downloadUrl.addOnSuccessListener {it ->
+                    if (it != null) {
                         imageURI = it.toString()
-                        setContent {
-                            ProfileScreen(
-                                document.data?.get("name").toString(),
-                                auth.currentUser?.email.toString(),
-                                document.data?.get("location").toString(),
-                                document.data?.get("type").toString(),
-                                imageURI
-                            )
-                        }
-                    }.addOnFailureListener {
-                        // Handle any errors
-                        println("failed")
-                        setContent {
-                            ProfileScreen(
-                                document.data?.get("name").toString(),
-                                auth.currentUser?.email.toString(),
-                                document.data?.get("location").toString(),
-                                document.data?.get("type").toString(),
-                                imageURI
-                            )
-                        }
+                        isLoading = false
                     }
-                }
-            } else {
-                Log.d(TAG, "No such document")
-                setContent {
-                    LoadFailScreen()
+                }.addOnFailureListener {
+                    isLoading = false
                 }
             }
-        }?.addOnFailureListener { exception ->
-            Log.d(TAG, "get failed with ", exception)
-            setContent {
-                LoadFailScreen()
-            }
+        } else {
+            Log.d(TAG, "No such document")
+            failed = true
         }
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_profile)
-        setContent {
-            LoadingScreen()
-        }
+    }?.addOnFailureListener { exception ->
+        Log.d(TAG, "get failed with ", exception)
+        failed = true
+    }
+
+
+    if (isLoading) {
+        LoadingScreen()
+    } else if (!failed) {
+            ProfileScreen(
+                userInfo?.get("name").toString(),
+                auth.currentUser?.email.toString(),
+                userInfo?.get("location").toString(),
+                userInfo?.get("type").toString(),
+                imageURI,
+                navController
+            )
+    } else {
+        LoadFailScreen()
     }
 }
 
 @Composable
-fun ProfileScreen(userName: String, userEmail: String, userLocation: String, type: String, imageURI: String) {
+fun ProfileScreen(userName: String, userEmail: String, userLocation: String, type: String, imageURI: String, navController: NavController) {
     var name by remember { mutableStateOf(userName) }
     var email by remember { mutableStateOf(userEmail) }
-    var location by remember {mutableStateOf(userLocation)}
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row{
-            Spacer(Modifier.weight(1f))
-            signout(name)
+    var location by remember { mutableStateOf(userLocation) }
+    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+        Scaffold(
+            bottomBar = {
+                NavBar(navController, type)
+            },
+        ) { inner ->
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .padding(vertical = 20.dp)
+                    .padding(bottom = inner.calculateBottomPadding()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row {
+                    Spacer(Modifier.weight(1f))
+                    Signout(name)
+                }
+                ProfileAccountHeader(type, name)
+                ProfileUserPfp(imageURI)
+                ProfileNameField(name = name, onNameChange = { name = it })
+                ProfileEmailField(email = email, onEmailChange = { email = it })
+                ProfileLocationField(location = location, onLocationChange = { location = it })
+                ProfileSaveButton(name, location)
+                if (type == "foodDonor") {
+                    CreateOfferButton(name)
+                } else {
+                    SearchOffersButton(name)
+                }
+            }
         }
-        accountHeader(type, name)
-        userPfp(imageURI)
-        nameField(name = name, onNameChange = {name = it})
-        emailField(email = email, onEmailChange = {email = it})
-        locationField(location = location, onLocationChange = {location = it})
-        saveButton(name, location)
-        if (type == "foodDonor") {
-            createOfferButton(name)
-        } else {
-            searchOffersButton(name)
-        }
+
     }
 }
 @Composable
@@ -160,7 +162,7 @@ fun LoadFailScreen() {
 }
 
 @Composable
-fun accountHeader(type: String, name: String) {
+fun ProfileAccountHeader(type: String, name: String) {
     var subHeader = if (type == "foodDonor") "Food Donor" else "Food Receiver"
     Text(text = "Welcome $name!",
         style=MaterialTheme.typography.h4,
@@ -175,7 +177,7 @@ fun accountHeader(type: String, name: String) {
 }
 
 @Composable
-fun userPfp(imageURI: String) {
+fun ProfileUserPfp(imageURI: String) {
     var pfp: String? by remember { mutableStateOf(imageURI) }
     val painter = rememberAsyncImagePainter(
         if (pfp.isNullOrEmpty()) {
@@ -232,23 +234,24 @@ fun userPfp(imageURI: String) {
     }
 }
 @Composable
-fun nameField(name: String, onNameChange: (String) -> Unit) {
+fun ProfileNameField(name: String, onNameChange: (String) -> Unit) {
     OutlinedTextField(value = name, onValueChange = onNameChange, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
 }
 
 @Composable
-fun emailField(email: String, onEmailChange: (String) -> Unit) {
+fun ProfileEmailField(email: String, onEmailChange: (String) -> Unit) {
     OutlinedTextField(value = email, onValueChange = onEmailChange, label = {Text("Email")}, modifier = Modifier.fillMaxWidth(), enabled = false)
 }
 
 @Composable
-fun locationField(location: String, onLocationChange: (String) -> Unit) {
+fun ProfileLocationField(location: String, onLocationChange: (String) -> Unit) {
     OutlinedTextField(value = location, onValueChange = onLocationChange, label = {Text("Postal Code")}, modifier = Modifier.fillMaxWidth())
 }
 @Composable
-fun saveButton(name: String, location: String) {
+fun ProfileSaveButton(name: String, location: String) {
+    val context = LocalContext.current
     ExtendedFloatingActionButton(
-        onClick = {saveDetails(name, location)},
+        onClick = {profileSaveDetails(name, location, context)},
         text = {Text("Save")},
         backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
@@ -256,14 +259,28 @@ fun saveButton(name: String, location: String) {
     )
 }
 
-fun saveDetails(name: String, location: String) {
+fun profileSaveDetails(name: String, location: String, context: Context) {
     auth.currentUser?.let { db.collection("users").document(it.uid)
-        .update("name", name, "location", location)
+        .update("name", name, "location", location).addOnCompleteListener {task ->
+            if (task.isSuccessful) {
+                Toast.makeText(
+                    context,
+                    "Saved successfully.",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Failed to save.",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
     }
 }
 
 @Composable
-fun createOfferButton(name: String) {
+fun CreateOfferButton(name: String) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         onClick = {createOfferRedirect(name, context)},
@@ -280,7 +297,7 @@ fun createOfferRedirect(name: String, context: Context) {
 }
 
 @Composable
-fun searchOffersButton(name: String) {
+fun SearchOffersButton(name: String) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         onClick = {searchOffersRedirect(name, context)},
@@ -297,7 +314,7 @@ fun searchOffersRedirect(name: String, context: Context) {
 }
 
 @Composable
-fun signout(name: String) {
+fun Signout(name: String) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
         onClick = {signoutAction(name, context)},
