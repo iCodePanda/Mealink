@@ -90,6 +90,14 @@ fun UserProfileScreen(navController: NavController) {
         LoadFailScreen()
     }
 }
+class UserProfileActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            Text("Placeholder screen")
+        }
+    }
+}
 
 @Composable
 fun ProfileScreen(userName: String, userEmail: String, userLocation: String, type: String, imageURI: String, navController: NavController) {

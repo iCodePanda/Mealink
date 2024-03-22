@@ -298,6 +298,10 @@ fun ItemPicture(imageURI: String, onImageSelected: (String) -> Unit) {
         Text(text = "Tap to upload image", Modifier.padding(top = 8.dp))
     }
 }
+@Composable
+fun CreateOffersPlaceholder() {
+    Text("Placeholder")
+}
 
 @Composable
 fun AddOfferButton(

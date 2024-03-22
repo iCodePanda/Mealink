@@ -80,6 +80,10 @@ class SearchOffers: AppCompatActivity() {
         }
     }
 }
+@Composable
+fun SearchOffersPlaceholder() {
+    Text("Placeholder")
+}
 
 @Composable
 fun searchOffersScreen(offers: List<Offer>) {

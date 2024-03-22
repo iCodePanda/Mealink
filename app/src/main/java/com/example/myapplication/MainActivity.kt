@@ -68,6 +68,12 @@ fun AppNavigation() {
             composable(Screens.Profile.route) {
                 UserProfileScreen(navController)
             }
+            composable(Screens.SearchOffers.route) {
+                SearchOffersPlaceholder()
+            }
+            composable(Screens.CreateOffers.route) {
+                CreateOffersPlaceholder()
+            }
         }
     }
 }
