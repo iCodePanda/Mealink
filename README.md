@@ -70,3 +70,38 @@ This version contains:
 [Link to Installer](https://git.uwaterloo.ca/g24kang/team-101-10/-/blob/bb595f2be547a1ab595df110ffdbd34e16aec338/Releases/v0.2/app-debug.apk)
 
 
+**SPRINT 3:**
+
+_22-March-2024
+V 0.3_
+
+_Features/Tickets Completed (more details in development journal):_
+
+- [Implement navigation bar](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/34)
+  - Refactor the app and put each UI page into a function with a class that can act as a navigator between them. This would follow the MVVM model -> Navigation bar works as expected
+
+  - Should migrate app to single-activity design before bottom nav-bar is fully integrated to app. Started migration with https://git.uwaterloo.ca/g24kang/team-101-10/-/commit/f1268e7874f0a74b330cec2a3568fecdd24282bc
+
+- [Set up database schema/relations for an offerEntity](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/7)
+
+- Adding a "Create an Offer" page functionality, both front-end and back-end
+  - [Set up buttons/routing for ability to create a food offering](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/8)
+  - [Front-end and functionality for creating a food offering](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/35)
+
+- Adding a "Search Offers" page functionality, both front-end and back-end
+  - [Set up buttons/routing for ability search for offerings](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/4)
+  - [Functionality for searching through food offerings](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/36)
+
+- [Implement secure Sign-out and rerouting](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/37)
+
+_Summary:_
+
+This version contains:
+- Functioning navigation bar and refactored application
+- Routing to "Create and Offer" page for foodDonors
+- Routing to "Search Offers" page for foodReceivers
+  - Ability to search offers in a list and map format 
+- Secure sign-out and redirection implemented
+
+
+Link to Installer
