@@ -1,6 +1,5 @@
 package com.example.myapplication
 import android.content.ContentValues.TAG
-import androidx.compose.runtime.Composable
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -28,6 +27,7 @@ import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import coil.compose.*
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -39,7 +39,7 @@ private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
 
 @Composable
-fun UserProfileScreen() {
+fun UserProfileScreen(navController: NavController) {
     auth = Firebase.auth
     storage = Firebase.storage
     var storageRef = storage.reference
@@ -78,46 +78,57 @@ fun UserProfileScreen() {
     if (isLoading) {
         LoadingScreen()
     } else if (!failed) {
-        ProfileScreen(
-            userInfo?.get("name").toString(),
-            auth.currentUser?.email.toString(),
-            userInfo?.get("location").toString(),
-            userInfo?.get("type").toString(),
-            imageURI
-        )
+            ProfileScreen(
+                userInfo?.get("name").toString(),
+                auth.currentUser?.email.toString(),
+                userInfo?.get("location").toString(),
+                userInfo?.get("type").toString(),
+                imageURI,
+                navController
+            )
     } else {
         LoadFailScreen()
     }
 }
 
 @Composable
-fun ProfileScreen(userName: String, userEmail: String, userLocation: String, type: String, imageURI: String) {
+fun ProfileScreen(userName: String, userEmail: String, userLocation: String, type: String, imageURI: String, navController: NavController) {
     var name by remember { mutableStateOf(userName) }
     var email by remember { mutableStateOf(userEmail) }
-    var location by remember {mutableStateOf(userLocation)}
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row{
-            Spacer(Modifier.weight(1f))
-            Signout(name)
+    var location by remember { mutableStateOf(userLocation) }
+    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+        Scaffold(
+            bottomBar = {
+                NavBar(navController, type)
+            },
+        ) { inner ->
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp)
+                    .padding(vertical = 20.dp)
+                    .padding(bottom = inner.calculateBottomPadding()),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row {
+                    Spacer(Modifier.weight(1f))
+                    Signout(name)
+                }
+                ProfileAccountHeader(type, name)
+                ProfileUserPfp(imageURI)
+                ProfileNameField(name = name, onNameChange = { name = it })
+                ProfileEmailField(email = email, onEmailChange = { email = it })
+                ProfileLocationField(location = location, onLocationChange = { location = it })
+                ProfileSaveButton(name, location)
+                if (type == "foodDonor") {
+                    CreateOfferButton(name)
+                } else {
+                    SearchOffersButton(name)
+                }
+            }
         }
-        ProfileAccountHeader(type, name)
-        ProfileUserPfp(imageURI)
-        ProfileNameField(name = name, onNameChange = {name = it})
-        ProfileEmailField(email = email, onEmailChange = {email = it})
-        ProfileLocationField(location = location, onLocationChange = {location = it})
-        ProfileSaveButton(name, location)
-        if (type == "foodDonor") {
-            CreateOfferButton(name)
-        } else {
-            SearchOffersButton(name)
-        }
+
     }
 }
 @Composable
@@ -238,8 +249,9 @@ fun ProfileLocationField(location: String, onLocationChange: (String) -> Unit) {
 }
 @Composable
 fun ProfileSaveButton(name: String, location: String) {
+    val context = LocalContext.current
     ExtendedFloatingActionButton(
-        onClick = {profileSaveDetails(name, location)},
+        onClick = {profileSaveDetails(name, location, context)},
         text = {Text("Save")},
         backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
@@ -247,15 +259,22 @@ fun ProfileSaveButton(name: String, location: String) {
     )
 }
 
-fun profileSaveDetails(name: String, location: String) {
-    val context = LocalContext.current
+fun profileSaveDetails(name: String, location: String, context: Context) {
     auth.currentUser?.let { db.collection("users").document(it.uid)
-        .update("name", name, "location", location).addOnSuccessListener {
-            Toast.makeText(
-                context,
-                "Successfully saved.",
-                Toast.LENGTH_SHORT,
-            ).show()
+        .update("name", name, "location", location).addOnCompleteListener {task ->
+            if (task.isSuccessful) {
+                Toast.makeText(
+                    context,
+                    "Saved successfully.",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            } else {
+                Toast.makeText(
+                    context,
+                    "Failed to save.",
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
         }
     }
 }

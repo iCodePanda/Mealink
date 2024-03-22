@@ -66,7 +66,7 @@ fun AppNavigation() {
                 SignUpScreen()
             }
             composable(Screens.Profile.route) {
-                UserProfileScreen()
+                UserProfileScreen(navController)
             }
         }
     }
@@ -181,9 +181,13 @@ fun MainPageImage() {
     )
 }
 @Composable
-fun NavBar(navController: NavController) {
+fun NavBar(navController: NavController, accountType: String) {
     val items = listOf(
-        Screens.Login,
+        if (accountType == "foodDonor") {
+            Screens.CreateOffers
+        } else {
+            Screens.SearchOffers
+        },
         Screens.Profile,
     )
     BottomNavigation(
@@ -196,9 +200,16 @@ fun NavBar(navController: NavController) {
             BottomNavigationItem(
                 modifier = Modifier.size(100.dp),
                 icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.account_circle), contentDescription = null
-                    )
+                    if (item.icon != null) {
+                        Icon(
+                            painter = painterResource(id = item.icon), contentDescription = null
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.undraw_breakfast_psiw), contentDescription = null
+                        )
+                    }
+
                 },
                 label = {
                     Text(
@@ -224,13 +235,4 @@ fun NavBar(navController: NavController) {
             )
         }
     }
-}
-
-@Composable
-fun NavBarWrapper(navController: NavController) {
-    Scaffold(
-        bottomBar = {
-            NavBar(navController)
-        },
-    ) { }
 }
