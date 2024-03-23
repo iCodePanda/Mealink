@@ -104,4 +104,4 @@ This version contains:
 - Secure sign-out and redirection implemented
 
 
-Link to Installer
+[Link to Installer](https://git.uwaterloo.ca/g24kang/team-101-10/-/blob/main/Releases/v0.3/app-debug.apk)
