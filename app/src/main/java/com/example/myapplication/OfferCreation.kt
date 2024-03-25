@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.navigation.NavController
 import coil.compose.*
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.Firebase
@@ -46,19 +47,10 @@ import kotlin.io.path.outputStream
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
 
-class OfferCreation: AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        storage = Firebase.storage
-        auth = Firebase.auth
-        setContent {
-            OfferCreateForm()
-        }
-    }
-}
-
 @Composable
-fun OfferCreateForm() {
+fun OfferCreateScreen(navController: NavController) {
+    storage = Firebase.storage
+    auth = Firebase.auth
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var portionCount by remember { mutableStateOf("") }

@@ -130,7 +130,7 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
                 ProfileLocationField(location = location, onLocationChange = { location = it })
                 ProfileSaveButton(name, location)
                 if (type == "foodDonor") {
-                    CreateOfferButton(name)
+                    CreateOfferButton(navController)
                 } else {
                     SearchOffersButton(name)
                 }
@@ -288,10 +288,10 @@ fun profileSaveDetails(name: String, location: String, context: Context) {
 }
 
 @Composable
-fun CreateOfferButton(name: String) {
+fun CreateOfferButton(navController: NavController) {
     val context = LocalContext.current
     ExtendedFloatingActionButton(
-        onClick = {createOfferRedirect(name, context)},
+        onClick = {navController.navigate(Screens.CreateOffers.route)},
         text = {Text("Create Offer")},
         backgroundColor = Color(0xFF00BF81),
         elevation = FloatingActionButtonDefaults.elevation(0.dp),
@@ -299,10 +299,10 @@ fun CreateOfferButton(name: String) {
     )
 }
 
-fun createOfferRedirect(name: String, context: Context) {
-    val intent = Intent(context, OfferCreation::class.java)
-    context.startActivity(intent, null)
-}
+//fun createOfferRedirect(name: String, context: Context) {
+//    val intent = Intent(context, OfferCreation::class.java)
+//    context.startActivity(intent, null)
+//}
 
 @Composable
 fun SearchOffersButton(name: String) {
