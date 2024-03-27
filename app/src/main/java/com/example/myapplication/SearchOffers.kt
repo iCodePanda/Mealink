@@ -17,27 +17,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.google.android.material.search.SearchBar
 import com.google.firebase.Firebase
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
-import com.google.firebase.firestore.toObject
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import java.io.Serializable
 
 private lateinit var auth: FirebaseAuth
@@ -49,11 +40,72 @@ data class Offer(
     val availableTime: Timestamp? = null,
     val claimedBy: String? = null,
     val description: String = "",
-    val imageFilePath: String = "",
+    var imageFilePath: String = "",
     val name: String = "",
-    //val offeredBy: String = "",
-    val portionCount: Int = 0
+    val offeredBy: DocumentReference? = null,
+    val portionCount: Int = 0,
+    var coverFilePath: String = ""
 ): Serializable
+
+
+@Composable
+fun SearchOffersScreen() {
+    auth = Firebase.auth
+    storage = Firebase.storage
+    val user = auth.currentUser
+    var storageRef = storage.reference
+    val offers = remember { mutableStateListOf<Offer>() }
+    var isLoading by remember { mutableStateOf(true) }
+    var numOffers by remember { mutableStateOf(0) }
+    var numCompleteCovers by remember { mutableStateOf(0) }
+    var numCompleteOffers by remember { mutableStateOf(0) }
+    val offersCollection = firestore.collection("offers")
+    offersCollection.get()
+        .addOnSuccessListener { result ->
+            numOffers = result.size()
+            println(numOffers)
+            for (document in result) {
+                val offer = document.toObject(Offer::class.java)
+                offer.offeredBy?.let {
+                    storageRef.child(it.id).downloadUrl.addOnSuccessListener { it ->
+                        if (it != null) {
+                            offer.coverFilePath = it.toString()
+                        }
+                        println(it.toString())
+                        numCompleteCovers += 1
+                    }.addOnFailureListener {
+                        // handle error
+                        numCompleteCovers += 1
+                    }
+                }
+                if (offer.imageFilePath != "") {
+                    storageRef.child(offer.imageFilePath).downloadUrl.addOnSuccessListener { it ->
+                        if (it != null) {
+                            offer.imageFilePath = it.toString()
+                        }
+                        println(it.toString())
+                        numCompleteOffers += 1
+                    }.addOnFailureListener {
+                        // handle error
+                        numCompleteOffers += 1
+                    }
+                }
+                else {
+                    numCompleteOffers += 1
+                }
+                offers.add(offer)
+            }
+        }
+        .addOnFailureListener { exception ->
+            // should probably handle error
+        }
+        if (numCompleteOffers != numOffers || numCompleteCovers != numOffers) {
+            LoadingScreen()
+        }
+        else {
+            searchOffersScreen(offers = offers)
+        }
+}
 
 class SearchOffers: AppCompatActivity() {
 
@@ -61,25 +113,67 @@ class SearchOffers: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         auth = Firebase.auth
         storage = Firebase.storage
+        val user = auth.currentUser
+        var storageRef = storage.reference
         setContent {
             val offers = remember { mutableStateListOf<Offer>() }
+            var isLoading by remember { mutableStateOf(true) }
+            var numOffers by remember { mutableStateOf(0) }
+            var numCompleteCovers by remember { mutableStateOf(0) }
+            var numCompleteOffers by remember { mutableStateOf(0) }
             val offersCollection = firestore.collection("offers")
             offersCollection.get()
                 .addOnSuccessListener { result ->
+                    numOffers = result.size()
+                    println(numOffers)
                     for (document in result) {
                         val offer = document.toObject(Offer::class.java)
+                        offer.offeredBy?.let {
+                            storageRef.child(it.id).downloadUrl.addOnSuccessListener { it ->
+                                if (it != null) {
+                                    offer.coverFilePath = it.toString()
+                                }
+                                println(it.toString())
+                                numCompleteCovers += 1
+                            }.addOnFailureListener {
+                                // handle error
+                                numCompleteCovers += 1
+                            }
+                        }
+                        if (offer.imageFilePath != "") {
+                            storageRef.child(offer.imageFilePath).downloadUrl.addOnSuccessListener { it ->
+                                if (it != null) {
+                                    offer.imageFilePath = it.toString()
+                                }
+                                println(it.toString())
+                                numCompleteOffers += 1
+                            }.addOnFailureListener {
+                                // handle error
+                                numCompleteOffers += 1
+                            }
+                        }
+                        else {
+                            numCompleteOffers += 1
+                        }
                         offers.add(offer)
                     }
                 }
                 .addOnFailureListener { exception ->
                     // should probably handle error
                 }
+
             MyApplicationTheme {
-                searchOffersScreen(offers = offers)
+                if (numCompleteOffers != numOffers || numCompleteCovers != numOffers) {
+                    LoadingScreen()
+                }
+                else {
+                    searchOffersScreen(offers = offers)
+                }
             }
         }
     }
 }
+
 @Composable
 fun SearchOffersPlaceholder() {
     Text("Placeholder")
@@ -163,7 +257,14 @@ fun OffersList(offers: List<Offer>) {
                     .padding(8.dp) // Add padding around each item for spacing
                     .fillMaxWidth()
             ) {
-                val imagePainter = painterResource(id = R.drawable.tims)
+                val imagePainter = rememberAsyncImagePainter(
+                    if (offers.coverFilePath.isNullOrEmpty()) {
+                        R.drawable.undraw_breakfast_psiw
+                        // default pfp
+                    } else {
+                        offers.coverFilePath
+                    }
+                )
                 val context = LocalContext.current
                 CustomImageButton(
                     imagePainter = imagePainter,

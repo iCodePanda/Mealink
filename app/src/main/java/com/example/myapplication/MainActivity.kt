@@ -69,7 +69,7 @@ fun AppNavigation() {
                 UserProfileScreen(navController)
             }
             composable(Screens.SearchOffers.route) {
-                SearchOffersPlaceholder()
+                SearchOffersScreen()
             }
             composable(Screens.CreateOffers.route) {
                 OfferCreateScreen(navController)
