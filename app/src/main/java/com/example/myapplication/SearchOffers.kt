@@ -4,6 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -57,49 +59,70 @@ fun SearchOffersScreen() {
     val offers = remember { mutableStateListOf<Offer>() }
     var isLoading by remember { mutableStateOf(true) }
     var numOffers by remember { mutableStateOf(0) }
-    var numCompleteCovers by remember { mutableStateOf(0) }
-    var numCompleteOffers by remember { mutableStateOf(0) }
-    val offersCollection = firestore.collection("offers")
-    offersCollection.get()
-        .addOnSuccessListener { result ->
-            numOffers = result.size()
-            println(numOffers)
-            for (document in result) {
-                val offer = document.toObject(Offer::class.java)
-                offer.offeredBy?.let {
-                    storageRef.child(it.id).downloadUrl.addOnSuccessListener { it ->
-                        if (it != null) {
-                            offer.coverFilePath = it.toString()
+    LaunchedEffect(Unit) {
+        var numCompleteCovers = 0
+        var numCompleteOffers = 0
+        val offersCollection = firestore.collection("offers")
+        offersCollection.get()
+            .addOnSuccessListener { result ->
+                numOffers = result.size()
+                println(numOffers)
+                for (document in result) {
+                    val offer = document.toObject(Offer::class.java)
+                    println("here" + " " + offer.imageFilePath)
+                    offer.offeredBy?.let {
+                        storageRef.child(it.id).downloadUrl.addOnSuccessListener { it ->
+                            if (it != null) {
+                                offer.coverFilePath = it.toString()
+                            }
+                            println(it.toString())
+                            numCompleteCovers += 1
+                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                isLoading = false
+                            }
+                        }.addOnFailureListener {
+                            // handle error
+                            numCompleteCovers += 1
+                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                isLoading = false
+                            }
                         }
-                        println(it.toString())
-                        numCompleteCovers += 1
-                    }.addOnFailureListener {
-                        // handle error
-                        numCompleteCovers += 1
                     }
-                }
-                if (offer.imageFilePath != "") {
-                    storageRef.child(offer.imageFilePath).downloadUrl.addOnSuccessListener { it ->
-                        if (it != null) {
-                            offer.imageFilePath = it.toString()
+                    if (offer.imageFilePath != "" && offer.imageFilePath != null) {
+                        println("we are here!")
+                        storageRef.child(offer.imageFilePath).downloadUrl.addOnSuccessListener { it ->
+                            if (it != null) {
+                                offer.imageFilePath = it.toString()
+                            }
+                            println(it.toString())
+                            numCompleteOffers += 1
+                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                isLoading = false
+                            }
+                        }.addOnFailureListener {
+                            // handle error
+                            numCompleteOffers += 1
+                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                isLoading = false
+                            }
                         }
-                        println(it.toString())
+                    } else {
                         numCompleteOffers += 1
-                    }.addOnFailureListener {
-                        // handle error
-                        numCompleteOffers += 1
+                        if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                            isLoading = false
+                        }
                     }
+                    offers.add(offer)
+                    println(numOffers)
+                    println(numCompleteOffers)
+                    println(numCompleteCovers)
                 }
-                else {
-                    numCompleteOffers += 1
-                }
-                offers.add(offer)
             }
-        }
-        .addOnFailureListener { exception ->
-            // should probably handle error
-        }
-        if (numCompleteOffers != numOffers || numCompleteCovers != numOffers) {
+            .addOnFailureListener { exception ->
+                // should probably handle error
+            }
+    }
+        if (isLoading) {
             LoadingScreen()
         }
         else {
