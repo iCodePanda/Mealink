@@ -34,7 +34,10 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
-
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
+import org.json.JSONObject
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
 
@@ -81,7 +84,7 @@ fun UserProfileScreen(navController: NavController) {
             ProfileScreen(
                 userInfo?.get("name").toString(),
                 auth.currentUser?.email.toString(),
-                userInfo?.get("location").toString(),
+                userInfo?.get("address").toString(),
                 userInfo?.get("type").toString(),
                 imageURI,
                 navController
@@ -253,20 +256,53 @@ fun ProfileEmailField(email: String, onEmailChange: (String) -> Unit) {
 
 @Composable
 fun ProfileLocationField(location: String, onLocationChange: (String) -> Unit) {
-    OutlinedTextField(value = location, onValueChange = onLocationChange, label = {Text("Postal Code")}, modifier = Modifier.fillMaxWidth())
+    OutlinedTextField(value = location, onValueChange = onLocationChange, label = {Text("Address")}, modifier = Modifier.fillMaxWidth())
 }
 @Composable
 fun ProfileSaveButton(name: String, location: String) {
+    val apiKey = "AIzaSyBikmTl_I4bRyx83Yk1XNBsE8jfj9z8_TU"
     val context = LocalContext.current
-    ExtendedFloatingActionButton(
-        onClick = {profileSaveDetails(name, location, context)},
-        text = {Text("Save")},
-        backgroundColor = Color(0xFF00BF81),
-        elevation = FloatingActionButtonDefaults.elevation(0.dp),
-        contentColor = Color(0xFFFFFFFF),
+    Button(
+        onClick = {
+            // Convert the postal code to coordinates first
+            fetchCoordinatesFromAddress(context, location, apiKey, onSuccess = { lat, lng ->
+                // Upon successful conversion, save the profile details including the new coordinates
+                // This is a placeholder call - you need to integrate this with your actual save logic
+                saveUserProfileWithCoordinates(name, location, lat, lng, context)
+            }, onError = { errorMessage ->
+                // Handle the error case, e.g., by showing a toast
+                Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+            })
+        },
+        content = { Text("Save") }
     )
 }
 
+fun saveUserProfileWithCoordinates(name: String, address: String, lat: Double, lng: Double, context: Context) {
+    // Here, you should implement the logic to save the profile details including the latitude and longitude
+    // For demonstration, let's just log the coordinates
+    Log.d(TAG, "Saving profile with coordinates: Lat = $lat, Lng = $lng")
+
+    // Assuming you're using Firebase Firestore to save the user profile:
+    val userProfileUpdates = mapOf(
+        "name" to name,
+        "address" to address,
+        "latitude" to lat,
+        "longitude" to lng
+    )
+
+    auth.currentUser?.let {
+        db.collection("users").document(it.uid)
+            .update(userProfileUpdates)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Profile updated successfully.", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error updating profile", e)
+                Toast.makeText(context, "Failed to update profile.", Toast.LENGTH_SHORT).show()
+            }
+    }
+}
 fun profileSaveDetails(name: String, location: String, context: Context) {
     auth.currentUser?.let { db.collection("users").document(it.uid)
         .update("name", name, "location", location).addOnCompleteListener {task ->
@@ -359,5 +395,42 @@ fun signoutAction(name: String, context: Context) {
             "Sign Out failed.",
             Toast.LENGTH_SHORT,
         ).show()
+    }
+}
+
+// for converting address to lat long
+fun fetchCoordinatesFromAddress(context: Context, address: String, apiKey: String, onSuccess: (Double, Double) -> Unit, onError: (String) -> Unit) {
+    val urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=$apiKey"
+
+    thread {
+        try {
+            val url = URL(urlString)
+            with(url.openConnection() as HttpURLConnection) {
+                requestMethod = "GET"
+
+                inputStream.bufferedReader().use { reader ->
+                    val response = StringBuilder()
+                    var line: String?
+                    while (reader.readLine().also { line = it } != null) {
+                        response.append(line)
+                    }
+                    val jsonResponse = JSONObject(response.toString())
+                    val status = jsonResponse.getString("status")
+                    if (status == "OK") {
+                        val results = jsonResponse.getJSONArray("results")
+                        val location = results.getJSONObject(0).getJSONObject("geometry").getJSONObject("location")
+                        val lat = location.getDouble("lat")
+                        val lng = location.getDouble("lng")
+
+                        onSuccess(lat, lng)
+                    } else {
+                        onError("Geocoding failed with status: $status")
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("Geocoding", "Error fetching coordinates", e)
+            onError("Failed to fetch coordinates: ${e.message}")
+        }
     }
 }

@@ -1,4 +1,5 @@
 package com.example.myapplication
+import MapComposable
 import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.appcompat.app.AppCompatActivity
@@ -120,12 +121,12 @@ fun SearchOffersScreen() {
                 // should probably handle error
             }
     }
-        if (isLoading) {
-            LoadingScreen()
-        }
-        else {
-            searchOffersScreen(offers = offers)
-        }
+    if (isLoading) {
+        LoadingScreen()
+    }
+    else {
+        searchOffersScreen(offers = offers)
+    }
 }
 
 class SearchOffers: AppCompatActivity() {
@@ -356,3 +357,4 @@ fun CustomImageButton(
         }
     }
 }
+
