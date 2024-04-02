@@ -39,6 +39,8 @@ import org.checkerframework.common.subtyping.qual.Bottom
 import androidx.compose.ui.graphics.vector.*
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.*
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 
 class MainActivity : AppCompatActivity() {
@@ -69,7 +71,7 @@ fun AppNavigation() {
                 UserProfileScreen(navController)
             }
             composable(Screens.SearchOffers.route) {
-                SearchOffersScreen()
+                SearchOffersScreen(navController)
             }
             composable(Screens.CreateOffers.route) {
                 OfferCreateScreen(navController)

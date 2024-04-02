@@ -95,6 +95,37 @@ class OfferDetailActivity : AppCompatActivity() {
 }
 
 @Composable
+fun OfferDetailsScreen(
+    selectedOffer : Offer
+) {
+    val auth : FirebaseAuth = Firebase.auth
+    Column (modifier = Modifier
+        .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally){
+        OfferDetails()
+        if (selectedOffer.name != null) {
+            offerText(selectedOffer.name)
+        }
+        if (selectedOffer.description != null) {
+            offerText(selectedOffer.description)
+        }
+        if (selectedOffer.portionCount != -1) {
+            portionText(selectedOffer.portionCount.toString())
+        }
+        if (selectedOffer.imageFilePath != null) {
+            offerPic(selectedOffer.imageFilePath)
+        }
+        AcceptOfferButton(selectedOffer.name!!,
+            selectedOffer.description!!,
+            selectedOffer.portionCount.toString(),
+            selectedOffer.offeredBy?.id!!,
+            auth.currentUser?.uid!!,
+            selectedOffer.availableTime?.toDate().toString()!!,
+            selectedOffer.id!!)
+    }
+}
+
+@Composable
 fun OfferDetails() {
     Text(
         "Offer Details",

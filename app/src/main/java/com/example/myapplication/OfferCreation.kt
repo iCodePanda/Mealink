@@ -60,29 +60,37 @@ fun OfferCreateScreen(navController: NavController) {
 
     MyApplicationTheme {
         Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
-            Column(
-                modifier = Modifier.padding(top = 50.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(20.dp)
-            ) {
-                Heading()
-                ItemName(name, onNameChange = { name = it })
-                Description(description, onDescChange = { description = it })
-                PortionCount(portionCount, onCountChange = { portionCount = it })
-                DatePicker(onDateChange = {
-                    selectedDate = it
-                })
-                TimePicker(onTimeChange = {
-                    selectedTime = it
-                })
-                ItemPicture(imageURI = "", onImageSelected = { selectedImageFile = it })
-                AddOfferButton(
-                    name,
-                    description,
-                    portionCount,
-                    selectedDate + selectedTime + 14400000L,
-                    selectedImageFile
-                )
+            Scaffold(
+                bottomBar = {
+                    NavBar(navController, "foodDonor")
+                },
+            ) { inner ->
+                Column(
+                    modifier = Modifier
+                        .padding(top = 30.dp)
+                        .padding(bottom = inner.calculateBottomPadding()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    Heading()
+                    ItemName(name, onNameChange = { name = it })
+                    Description(description, onDescChange = { description = it })
+                    PortionCount(portionCount, onCountChange = { portionCount = it })
+                    DatePicker(onDateChange = {
+                        selectedDate = it
+                    })
+                    TimePicker(onTimeChange = {
+                        selectedTime = it
+                    })
+                    ItemPicture(imageURI = "", onImageSelected = { selectedImageFile = it })
+                    AddOfferButton(
+                        name,
+                        description,
+                        portionCount,
+                        selectedDate + selectedTime + 14400000L,
+                        selectedImageFile
+                    )
+                }
             }
         }
     }

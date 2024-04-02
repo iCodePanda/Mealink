@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.Firebase
@@ -53,7 +54,7 @@ data class Offer(
 
 
 @Composable
-fun SearchOffersScreen() {
+fun SearchOffersScreen(navController: NavController) {
     auth = Firebase.auth
     storage = Firebase.storage
     val user = auth.currentUser
@@ -125,7 +126,7 @@ fun SearchOffersScreen() {
         LoadingScreen()
     }
     else {
-        searchOffersScreen(offers = offers)
+        searchOffersScreen(offers = offers, navController)
     }
 }
 
@@ -189,7 +190,7 @@ class SearchOffers: AppCompatActivity() {
                     LoadingScreen()
                 }
                 else {
-                    searchOffersScreen(offers = offers)
+//                    searchOffersScreen(offers = offers)
                 }
             }
         }
@@ -202,20 +203,41 @@ fun SearchOffersPlaceholder() {
 }
 
 @Composable
-fun searchOffersScreen(offers: List<Offer>) {
+fun searchOffersScreen(offers: List<Offer>, navController: NavController) {
     var selectedOption by remember { mutableStateOf("Using Search Bar") }
+    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
 
-    Column {
-        BrowseOffers()
-        CustomToggle(selectedOption = selectedOption, onOptionSelected = { selectedOption = it })
-        if (selectedOption == "Using Maps") {
-            MapComposable()
+    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+        Scaffold(
+            bottomBar = {
+                NavBar(navController, "foodReceiver")
+            },
+        ) { inner ->
+            selectedOffer?.let { OfferDetailsScreen(selectedOffer = it) }
+
+            if (selectedOffer == null) {
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = inner.calculateBottomPadding())
+                ) {
+                    BrowseOffers()
+                    CustomToggle(
+                        selectedOption = selectedOption,
+                        onOptionSelected = { selectedOption = it })
+                    if (selectedOption == "Using Maps") {
+                        MapComposable()
+                    }
+                    OffersList(
+                        offers = offers,
+                        navController,
+                        onOfferSelected = { selectedOffer = it })
+                }
+            }
         }
-        OffersList(offers = offers)
     }
-
-
 }
+
 @Composable
 fun BrowseOffers() {
     Text(
@@ -266,7 +288,12 @@ fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
 }
 
 @Composable
-fun OffersList(offers: List<Offer>) {
+fun OffersList(offers: List<Offer>, navController: NavController, onOfferSelected: (Offer) -> Unit) {
+    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
+    if (selectedOffer != null) {
+        OfferDetailsScreen(selectedOffer!!)
+    }
+
     LazyColumn (
         modifier = Modifier
             .padding(vertical = 16.dp)
@@ -293,16 +320,7 @@ fun OffersList(offers: List<Offer>) {
                     leftText = offers.name,
                     rightText = offers.availableTime?.toDate().toString(),
                     onButtonClick = {
-                        val intent = Intent(context, OfferDetailActivity::class.java).apply {
-                            putExtra("offerName", offers.name)
-                            putExtra("offerDescription", offers.description)
-                            putExtra("offerImageFilePath", offers.imageFilePath)
-                            putExtra("offerPortionCount", offers.portionCount)
-                            putExtra("offeredByUID", offers.offeredBy?.id)
-                            putExtra("availableTime", offers.availableTime?.toDate().toString())
-                            putExtra("offerId", offers.id)
-                        }
-                        context.startActivity(intent)
+                        onOfferSelected(offers)
                     },
                 )
             }
