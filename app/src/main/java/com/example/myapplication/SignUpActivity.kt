@@ -184,6 +184,7 @@ fun createAccount(email: String, password: String, name: String, type: String, l
                     "name" to name,
                     "location" to location,
                     "type" to type,
+                    "email" to email
                 )
                 db.collection("users")
                     .document(user!!.uid)

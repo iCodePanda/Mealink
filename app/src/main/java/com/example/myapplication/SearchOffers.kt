@@ -38,6 +38,7 @@ private lateinit var storage: FirebaseStorage
 val firestore = FirebaseFirestore.getInstance()
 
 data class Offer(
+    var id: String = "",
     val available: Boolean = false,
     val availableTime: Timestamp? = null,
     val claimedBy: String? = null,
@@ -63,13 +64,13 @@ fun SearchOffersScreen() {
         var numCompleteCovers = 0
         var numCompleteOffers = 0
         val offersCollection = firestore.collection("offers")
-        offersCollection.get()
+        offersCollection.whereEqualTo("available", true).get()
             .addOnSuccessListener { result ->
                 numOffers = result.size()
                 println(numOffers)
                 for (document in result) {
                     val offer = document.toObject(Offer::class.java)
-                    println("here" + " " + offer.imageFilePath)
+                    offer.id = document.id
                     offer.offeredBy?.let {
                         storageRef.child(it.id).downloadUrl.addOnSuccessListener { it ->
                             if (it != null) {
@@ -113,9 +114,6 @@ fun SearchOffersScreen() {
                         }
                     }
                     offers.add(offer)
-                    println(numOffers)
-                    println(numCompleteOffers)
-                    println(numCompleteCovers)
                 }
             }
             .addOnFailureListener { exception ->
@@ -299,6 +297,9 @@ fun OffersList(offers: List<Offer>) {
                             putExtra("offerDescription", offers.description)
                             putExtra("offerImageFilePath", offers.imageFilePath)
                             putExtra("offerPortionCount", offers.portionCount)
+                            putExtra("offeredByUID", offers.offeredBy?.id)
+                            putExtra("availableTime", offers.availableTime?.toDate().toString())
+                            putExtra("offerId", offers.id)
                         }
                         context.startActivity(intent)
                     },

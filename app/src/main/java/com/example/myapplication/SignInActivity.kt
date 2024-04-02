@@ -25,6 +25,7 @@ private lateinit var auth: FirebaseAuth
 @Composable
 fun SignInScreen(navController: NavController) {
     auth = Firebase.auth
+    println(auth.currentUser?.uid)
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Surface(
