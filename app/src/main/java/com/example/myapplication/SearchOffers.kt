@@ -64,7 +64,7 @@ fun SearchOffersScreen(navController: NavController) {
     var numOffers by remember { mutableStateOf(0) }
     var selectedOption by remember { mutableStateOf("Using Search Bar") }
     var selectedOffer by remember { mutableStateOf<Offer?>(null) }
-    LaunchedEffect(selectedOffer) {
+    LaunchedEffect(selectedOffer == null) {
         if (selectedOffer == null) {
             isLoading = true
         }

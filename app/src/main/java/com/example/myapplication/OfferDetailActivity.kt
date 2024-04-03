@@ -1,18 +1,23 @@
 package com.example.myapplication
 
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,14 +27,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.FirebaseFirestore
 
 
 //class OfferDetailActivity : AppCompatActivity() {
@@ -92,7 +96,7 @@ fun OfferDetailsScreen(
     Column (modifier = Modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally){
-        OfferDetails()
+        OfferDetails(onOfferSelected)
         if (selectedOffer.name != null) {
             offerText(selectedOffer.name)
         }
@@ -117,15 +121,38 @@ fun OfferDetailsScreen(
 }
 
 @Composable
-fun OfferDetails() {
-    Text(
-        "Offer Details",
-        color = Color(0xFF00BF81),
-        fontSize = 40.sp,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 16.dp)
-    )
+fun OfferDetails(onOfferSelected: (Offer?) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            IconButton(
+                onClick = { onOfferSelected(null) },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back Arrow",
+                    tint = Color(0xFF00BF81)
+                )
+            }
+            Text(
+                "Offer Details",
+                color = Color(0xFF00BF81),
+                fontSize = 40.sp,
+                modifier = Modifier
+                    .padding(vertical = 16.dp),
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.size(48.dp))
+        }
+    }
 }
 
 @Composable
