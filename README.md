@@ -1,4 +1,42 @@
-Project Proposal Wiki Page: https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Project-Proposal
+**MEALINK**
+
+
+**_Description:_**
+
+MeaLink is a platform that can connect Food Donors and Food Receivers with ease. Who are these 2 user groups?
+
+Many communities struggle with food insecurity and organizations set up to help them often lack funding to create a quality experience (Food Receivers). On the other hand, the food industry struggles with excess food, and in turn food wastage on a mass scale (Food Donors). These two industries fit together like a puzzle piece for mutual benefit, and overall societal good. Restaurants with excess food or ingredients can connect with organizations that can make use of those resources to provide a quality experience for their population. This way, the restaurants find a convenient and simple way to practice corporate social responsibility (CSR) within their own communities, build trust within their customer base, and develop brand loyalty. On the other hand, the homeless shelters or welfare facilities benefit by being able to provide their population with diversified and quality meals and snacks, going beyond just the necessities, which in turn empowers the populations in their rehabilitation.
+
+Our app connects these 2 users, and makes the coordination of food simple, quick, and easy to understand.
+
+
+**_Screenshot and/or introduction video_**
+
+**_Meet the Team_**
+- Daniel Lu
+- Kanwal Jamal
+- Gursimran Kang
+- Teng Ma
+
+
+_User documentation Link_
+
+_Design Documentation Link_
+
+**_List of Releases_**
+- See below
+
+_Meeting Minutes_
+
+**_Individual Developer Journals_**
+
+- Daniel Lu
+- Kanwal Jamal
+- Gursimran Kang
+- Teng Ma
+
+
+**_Project Proposal Wiki Page:_** https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Project-Proposal
 
 **SPRINT 1:**
 
