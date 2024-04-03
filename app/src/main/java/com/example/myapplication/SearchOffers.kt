@@ -62,9 +62,15 @@ fun SearchOffersScreen(navController: NavController) {
     val offers = remember { mutableStateListOf<Offer>() }
     var isLoading by remember { mutableStateOf(true) }
     var numOffers by remember { mutableStateOf(0) }
-    LaunchedEffect(Unit) {
+    var selectedOption by remember { mutableStateOf("Using Search Bar") }
+    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
+    LaunchedEffect(selectedOffer) {
+        if (selectedOffer == null) {
+            isLoading = true
+        }
         var numCompleteCovers = 0
         var numCompleteOffers = 0
+        offers.clear()
         val offersCollection = firestore.collection("offers")
         offersCollection.whereEqualTo("available", true).get()
             .addOnSuccessListener { result ->
@@ -126,7 +132,35 @@ fun SearchOffersScreen(navController: NavController) {
         LoadingScreen()
     }
     else {
-        searchOffersScreen(offers = offers, navController)
+        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+            Scaffold(
+                bottomBar = {
+                    NavBar(navController, "foodReceiver")
+                },
+            ) { inner ->
+                selectedOffer?.let { OfferDetailsScreen(selectedOffer = it, onOfferSelected = { selectedOffer = it }) }
+
+                if (selectedOffer == null) {
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = inner.calculateBottomPadding())
+                    ) {
+                        BrowseOffers()
+                        CustomToggle(
+                            selectedOption = selectedOption,
+                            onOptionSelected = { selectedOption = it })
+                        if (selectedOption == "Using Maps") {
+                            MapComposable()
+                        }
+                        OffersList(
+                            offers = offers,
+                            navController,
+                            onOfferSelected = { selectedOffer = it })
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -213,7 +247,7 @@ fun searchOffersScreen(offers: List<Offer>, navController: NavController) {
                 NavBar(navController, "foodReceiver")
             },
         ) { inner ->
-            selectedOffer?.let { OfferDetailsScreen(selectedOffer = it) }
+            selectedOffer?.let { OfferDetailsScreen(selectedOffer = it, onOfferSelected = { selectedOffer = it }) }
 
             if (selectedOffer == null) {
                 Column(
@@ -288,11 +322,12 @@ fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
 }
 
 @Composable
-fun OffersList(offers: List<Offer>, navController: NavController, onOfferSelected: (Offer) -> Unit) {
-    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
-    if (selectedOffer != null) {
-        OfferDetailsScreen(selectedOffer!!)
-    }
+fun OffersList(offers: List<Offer>, navController: NavController, onOfferSelected: (Offer?) -> Unit) {
+//    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
+
+//    if (selectedOffer != null) {
+//        OfferDetailsScreen(selectedOffer!!, onOfferSelected = { selectedOffer = it })
+//    }
 
     LazyColumn (
         modifier = Modifier
