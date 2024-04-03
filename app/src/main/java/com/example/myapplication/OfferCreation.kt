@@ -264,15 +264,17 @@ fun ItemPicture(imageURI: String, onImageSelected: (String) -> Unit) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         photoUri = uri
-        val inputStream = context.contentResolver.openInputStream(photoUri!!)
-        pfp = photoUri.toString()
-        val tempFile = createTempFile(suffix = ".jpg")
-        inputStream?.use { input ->
-            tempFile.outputStream().use { output ->
-                input.copyTo(output)
+        if (photoUri != null) {
+            val inputStream = context.contentResolver.openInputStream(photoUri!!)
+            pfp = photoUri.toString()
+            val tempFile = createTempFile(suffix = ".jpg")
+            inputStream?.use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
             }
+            onImageSelected(tempFile.toString())
         }
-        onImageSelected(tempFile.toString())
     }
 
     Column (
@@ -317,42 +319,59 @@ fun AddOfferButton(
 
     ExtendedFloatingActionButton(
         onClick = {
-            val user = auth.currentUser
-            val offerTableEntry = hashMapOf(
-                "available" to true,
-                "availableTime" to Date(availableTime),
-                "claimedBy" to null,
-                "description" to description,
-                "imageFilePath" to "",
-                "name" to name,
-                "offeredBy" to db.document("users/" + (user?.uid ?: "")),
-                "portionCount" to portionCount.toInt()
-            )
-            selectedImageFile?.let { path ->
-                val file = File(path)
-                val fileName = "${System.currentTimeMillis()}.jpg"
-                val imageRef = storageRef.child(fileName)
+            if (name == "") {
+                Toast.makeText(context, "Please Enter a Name", Toast.LENGTH_SHORT).show()
+            }
+            else if (description == "") {
+                Toast.makeText(context, "Please Enter a Description", Toast.LENGTH_SHORT).show()
+            }
+            else if (portionCount.toIntOrNull() == null) {
+                Toast.makeText(context, "Please Enter a Valid Portion Count", Toast.LENGTH_SHORT).show()
+            }
+            else if (availableTime < System.currentTimeMillis()) {
+                Toast.makeText(context, "Please Enter a Valid Time", Toast.LENGTH_SHORT).show()
+            }
+            else if (selectedImageFile == "") {
+                Toast.makeText(context, "Please Select an Image", Toast.LENGTH_SHORT).show()
+            }
+            else {
+                val user = auth.currentUser
+                val offerTableEntry = hashMapOf(
+                    "available" to true,
+                    "availableTime" to Date(availableTime),
+                    "claimedBy" to null,
+                    "description" to description,
+                    "imageFilePath" to "",
+                    "name" to name,
+                    "offeredBy" to db.document("users/" + (user?.uid ?: "")),
+                    "portionCount" to portionCount.toInt()
+                )
+                selectedImageFile?.let { path ->
+                    val file = File(path)
+                    val fileName = "${System.currentTimeMillis()}.jpg"
+                    val imageRef = storageRef.child(fileName)
 
-                val uri = Uri.fromFile(file)
-                val uploadTask = imageRef.putFile(uri)
+                    val uri = Uri.fromFile(file)
+                    val uploadTask = imageRef.putFile(uri)
 
-                uploadTask.addOnSuccessListener {
-                    offerTableEntry["imageFilePath"] = fileName
-                    db.collection("offers")
-                        .add(offerTableEntry)
-                        .addOnSuccessListener { documentReference ->
-                            Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-                            val intent = Intent(context, UserProfileActivity::class.java)
-                            context.startActivity(intent, null)
-                            Toast.makeText(context, "Offer Created!", Toast.LENGTH_SHORT).show()
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w(TAG, "Error adding document", e)
-                            Toast.makeText(context, "Failed to create offer", Toast.LENGTH_SHORT).show()
-                        }
-                }.addOnFailureListener { exception ->
-                    Log.e(TAG, "Error uploading image", exception)
-                    Toast.makeText(context, "Failed to create offer", Toast.LENGTH_SHORT).show()
+                    uploadTask.addOnSuccessListener {
+                        offerTableEntry["imageFilePath"] = fileName
+                        db.collection("offers")
+                            .add(offerTableEntry)
+                            .addOnSuccessListener { documentReference ->
+                                Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
+                                val intent = Intent(context, UserProfileActivity::class.java)
+                                context.startActivity(intent, null)
+                                Toast.makeText(context, "Offer Created!", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w(TAG, "Error adding document", e)
+                                Toast.makeText(context, "Failed to create offer", Toast.LENGTH_SHORT).show()
+                            }
+                    }.addOnFailureListener { exception ->
+                        Log.e(TAG, "Error uploading image", exception)
+                        Toast.makeText(context, "Failed to create offer", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         },

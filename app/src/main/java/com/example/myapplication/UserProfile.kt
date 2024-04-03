@@ -202,16 +202,18 @@ fun ProfileUserPfp(imageURI: String) {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         photoUri = uri
-        val inputStream = context.contentResolver.openInputStream(photoUri!!)
-        val fileName = "${auth.currentUser?.uid}"
-        val imageRef = storageRef.child(fileName)
-        var uploadTask = imageRef.putStream(inputStream!!)
+        if (photoUri != null) {
+            val inputStream = context.contentResolver.openInputStream(photoUri!!)
+            val fileName = "${auth.currentUser?.uid}"
+            val imageRef = storageRef.child(fileName)
+            var uploadTask = imageRef.putStream(inputStream!!)
 
-        uploadTask.addOnFailureListener {
-            println("upload failed")
-        }.addOnSuccessListener { taskSnapshot ->
-            println("upload success")
-            pfp = photoUri.toString()
+            uploadTask.addOnFailureListener {
+                println("upload failed")
+            }.addOnSuccessListener { taskSnapshot ->
+                println("upload success")
+                pfp = photoUri.toString()
+            }
         }
     }
 
