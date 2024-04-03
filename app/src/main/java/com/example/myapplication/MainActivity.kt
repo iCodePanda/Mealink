@@ -41,6 +41,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 
 class MainActivity : AppCompatActivity() {
@@ -55,9 +57,10 @@ class MainActivity : AppCompatActivity() {
 
 @Composable
 fun AppNavigation() {
+    var auth = Firebase.auth
     val navController = rememberNavController()
     MyApplicationTheme {
-        NavHost(navController = navController, startDestination = Screens.Home.route) {
+        NavHost(navController = navController, startDestination = auth.currentUser?.let { Screens.Profile.route } ?: Screens.Home.route) {
             composable(Screens.Home.route) {
                 Home(navController)
             }
