@@ -134,8 +134,6 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
                 ProfileSaveButton(name, location)
                 if (type == "foodDonor") {
                     CreateOfferButton(navController)
-                } else {
-                    SearchOffersButton(name)
                 }
             }
         }
@@ -274,6 +272,10 @@ fun ProfileSaveButton(name: String, location: String) {
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             })
         },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xFF00BF81),
+            contentColor = Color.White
+        ),
         content = { Text("Save") }
     )
 }
@@ -340,17 +342,7 @@ fun CreateOfferButton(navController: NavController) {
 //    context.startActivity(intent, null)
 //}
 
-@Composable
-fun SearchOffersButton(name: String) {
-    val context = LocalContext.current
-    ExtendedFloatingActionButton(
-        onClick = {searchOffersRedirect(name, context)},
-        text = {Text("Search Offers")},
-        backgroundColor = Color(0xFF00BF81),
-        elevation = FloatingActionButtonDefaults.elevation(0.dp),
-        contentColor = Color(0xFFFFFFFF),
-    )
-}
+
 
 fun searchOffersRedirect(name: String, context: Context) {
     val intent = Intent(context, SearchOffers::class.java)

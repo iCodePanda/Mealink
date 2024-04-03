@@ -1,15 +1,12 @@
 import android.Manifest
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -76,7 +73,13 @@ fun MapComposable() {
             value = radius,
             onValueChange = { radius = it },
             valueRange = 1f..10f, // Slider range from 1 to 10 km
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier.padding(horizontal = 16.dp),
+            colors = SliderDefaults.colors(
+                activeTrackColor = Color(0xFF00BF81),
+                thumbColor = Color(0xFF00BF81),
+                inactiveTrackColor = Color(0xFF00BF81).copy(alpha = 0.24f) // Adjust the inactive part to be more transparent
+            )
+
         )
         Button(
             onClick = {
@@ -87,12 +90,17 @@ fun MapComposable() {
             },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(16.dp)
+                .padding(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color(0xFF00BF81), // Set the background color
+                contentColor = Color.White // Ensure the content (text/icons) color is white
+            )
         ) {
             Text("Set Radius")
         }
     }
 }
+
 
 fun queryRestaurantsNearby(location: LatLng, radius: Float, map: GoogleMap?) {
     val db = FirebaseFirestore.getInstance()
