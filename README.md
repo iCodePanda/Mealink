@@ -19,21 +19,21 @@ Our app connects these 2 users, and makes the coordination of food simple, quick
 - Teng Ma
 
 
-_User documentation Link_
+[**_User documentation Link_**](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/User-Documentation)
 
-_Design Documentation Link_
+[**_Design Documentation Link_**](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Design-Documentation)
 
 **_List of Releases_**
 - See below
 
-_Meeting Minutes_
+[**_Meeting Minutes_**](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Development-Journal)
 
 **_Individual Developer Journals_**
 
-- Daniel Lu
-- Kanwal Jamal
-- Gursimran Kang
-- Teng Ma
+- [Daniel Lu](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Daniel's-Journal)
+- [Kanwal Jamal](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Kanwal's-Journal)
+- [Gursimran Kang](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Gursimran's-Journal)
+- [Teng Ma](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Teng's-Journal)
 
 
 **_Project Proposal Wiki Page:_** https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Project-Proposal
