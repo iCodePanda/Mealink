@@ -44,7 +44,6 @@ import androidx.navigation.navArgument
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 
-
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
 
 @Composable
 fun AppNavigation() {
