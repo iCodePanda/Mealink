@@ -360,8 +360,6 @@ fun AddOfferButton(
                             .add(offerTableEntry)
                             .addOnSuccessListener { documentReference ->
                                 Log.d(TAG, "DocumentSnapshot written with ID: ${documentReference.id}")
-                                val intent = Intent(context, UserProfileActivity::class.java)
-                                context.startActivity(intent, null)
                                 Toast.makeText(context, "Offer Created!", Toast.LENGTH_SHORT).show()
                             }
                             .addOnFailureListener { e ->

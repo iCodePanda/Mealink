@@ -84,7 +84,7 @@ fun UserProfileScreen(navController: NavController) {
             ProfileScreen(
                 userInfo?.get("name").toString(),
                 auth.currentUser?.email.toString(),
-                userInfo?.get("address").toString(),
+                userInfo?.get("location").toString(),
                 userInfo?.get("type").toString(),
                 imageURI,
                 navController
@@ -253,7 +253,7 @@ fun ProfileEmailField(email: String, onEmailChange: (String) -> Unit) {
 
 @Composable
 fun ProfileLocationField(location: String, onLocationChange: (String) -> Unit) {
-    OutlinedTextField(value = location, onValueChange = onLocationChange, label = {Text("Address")}, modifier = Modifier.fillMaxWidth())
+    OutlinedTextField(value = location, onValueChange = onLocationChange, label = {Text("Location (Postal Code)")}, modifier = Modifier.fillMaxWidth())
 }
 @Composable
 fun ProfileSaveButton(name: String, location: String) {
@@ -261,13 +261,9 @@ fun ProfileSaveButton(name: String, location: String) {
     val context = LocalContext.current
     Button(
         onClick = {
-            // Convert the postal code to coordinates first
             fetchCoordinatesFromAddress(context, location, apiKey, onSuccess = { lat, lng ->
-                // Upon successful conversion, save the profile details including the new coordinates
-                // This is a placeholder call - you need to integrate this with your actual save logic
                 saveUserProfileWithCoordinates(name, location, lat, lng, context)
             }, onError = { errorMessage ->
-                // Handle the error case, e.g., by showing a toast
                 Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
             })
         },
@@ -280,14 +276,11 @@ fun ProfileSaveButton(name: String, location: String) {
 }
 
 fun saveUserProfileWithCoordinates(name: String, address: String, lat: Double, lng: Double, context: Context) {
-    // Here, you should implement the logic to save the profile details including the latitude and longitude
-    // For demonstration, let's just log the coordinates
     Log.d(TAG, "Saving profile with coordinates: Lat = $lat, Lng = $lng")
 
-    // Assuming you're using Firebase Firestore to save the user profile:
     val userProfileUpdates = mapOf(
         "name" to name,
-        "address" to address,
+        "location" to address,
         "latitude" to lat,
         "longitude" to lng
     )
@@ -347,7 +340,6 @@ fun signoutAction(name: String, context: Context) {
 
     val userCheck = FirebaseAuth.getInstance().getCurrentUser();
     if (userCheck == null) {
-        // User is signed out
         Log.d(TAG, "signOut:success")
         // navController.navigate(Screens.Profile.route)
         val intent = Intent(context, MainActivity::class.java)
@@ -372,7 +364,7 @@ fun signoutAction(name: String, context: Context) {
 
 // for converting address to lat long
 fun fetchCoordinatesFromAddress(context: Context, address: String, apiKey: String, onSuccess: (Double, Double) -> Unit, onError: (String) -> Unit) {
-    val urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&key=$apiKey"
+    val urlString = "https://maps.googleapis.com/maps/api/geocode/json?address=Canada $address&key=$apiKey"
 
     thread {
         try {
@@ -396,13 +388,11 @@ fun fetchCoordinatesFromAddress(context: Context, address: String, apiKey: Strin
 
                         onSuccess(lat, lng)
                     } else {
-                        onError("Geocoding failed with status: $status")
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e("Geocoding", "Error fetching coordinates", e)
-            onError("Failed to fetch coordinates: ${e.message}")
+//            Log.e("Geocoding", "Error fetching coordinates", e)
         }
     }
 }

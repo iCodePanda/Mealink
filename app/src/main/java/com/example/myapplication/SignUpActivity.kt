@@ -179,27 +179,33 @@ fun createAccount(email: String, password: String, name: String, type: String, l
                 // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "createUserWithEmail:success")
                 val user = auth.currentUser
+                fetchCoordinatesFromAddress(context, location, "AIzaSyBikmTl_I4bRyx83Yk1XNBsE8jfj9z8_TU", onSuccess = { lat, lng ->
+                    val userTableEntry = hashMapOf(
+                        "name" to name,
+                        "location" to location,
+                        "type" to type,
+                        "email" to email,
+                        "latitude" to lat,
+                        "longitude" to lng
+                    )
+                    db.collection("users")
+                        .document(user!!.uid)
+                        .set(userTableEntry)
+                        .addOnSuccessListener {
+                            Log.d(TAG, "DocumentSnapshot added")
+                            Toast.makeText(
+                                context,
+                                "User $name Registered Successfully!",
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w(TAG, "Error adding document", e)
+                        }
+                }, onError = { errorMessage ->
+                    Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                })
 //                    updateUI(user)
-                val userTableEntry = hashMapOf(
-                    "name" to name,
-                    "location" to location,
-                    "type" to type,
-                    "email" to email
-                )
-                db.collection("users")
-                    .document(user!!.uid)
-                    .set(userTableEntry)
-                    .addOnSuccessListener {
-                        Log.d(TAG, "DocumentSnapshot added")
-                    }
-                    .addOnFailureListener { e ->
-                        Log.w(TAG, "Error adding document", e)
-                    }
-                Toast.makeText(
-                    context,
-                    "User $name Registered Successfully!",
-                    Toast.LENGTH_SHORT,
-                ).show()
             } else {
                 // If sign in fails, display a message to the user.
                 Log.w(TAG, "createUserWithEmail:failure", task.exception)

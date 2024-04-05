@@ -35,58 +35,6 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
-
-//class OfferDetailActivity : AppCompatActivity() {
-//    val db = FirebaseFirestore.getInstance()
-//    val auth : FirebaseAuth = Firebase.auth
-//    val userUid = auth.currentUser?.uid
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_offer_detail)
-//        val offerName = intent.getStringExtra("offerName")
-//        val offerDescription = intent.getStringExtra("offerDescription")
-//        val offerImageFilePath = intent.getStringExtra("offerImageFilePath")
-//        val offerPortionCount = intent.getIntExtra("offerPortionCount", -1)
-//        val offeredByUid = intent.getStringExtra("offeredByUID")
-//        val offerAvailableTime = intent.getStringExtra("availableTime")
-//        val offerId = intent.getStringExtra("offerId")
-//
-//        setContent {
-//            MyApplicationTheme {
-//                Column (modifier = Modifier
-//                        .fillMaxSize(),
-//                        horizontalAlignment = Alignment.CenterHorizontally){
-//                    OfferDetails()
-//                    if (offerName != null) {
-//                        offerText(offerName)
-//                    }
-//                    if (offerDescription != null) {
-//                        offerText(offerDescription)
-//                    }
-//                    if (offerPortionCount != -1) {
-//                        portionText(offerPortionCount.toString())
-//                    }
-//                    if (offerImageFilePath != null) {
-//                        offerPic(offerImageFilePath)
-//                    }
-//                    AcceptOfferButton(
-//                        offerName!!,
-//                        offerDescription!!,
-//                        offerPortionCount.toString(),
-//                        offeredByUid!!,
-//                        userUid!!,
-//                        offerAvailableTime!!,
-//                        offerId!!,
-//                        onOfferSelected
-//                    )
-//                }
-//            }
-//        }
-//
-//    }
-//}
-
 @Composable
 fun OfferDetailsScreen(
     selectedOffer : Offer,

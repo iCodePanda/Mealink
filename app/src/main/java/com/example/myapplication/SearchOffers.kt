@@ -1,12 +1,11 @@
 package com.example.myapplication
 import MapComposable
-import android.content.Intent
+import android.content.ContentValues
 import androidx.compose.runtime.Composable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +23,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import calculateDistance
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.google.firebase.Firebase
@@ -49,7 +49,8 @@ data class Offer(
     val name: String = "",
     val offeredBy: DocumentReference? = null,
     val portionCount: Int = 0,
-    var coverFilePath: String = ""
+    var coverFilePath: String = "",
+    var distance: Double = 0.0
 ): Serializable
 
 
@@ -57,13 +58,17 @@ data class Offer(
 fun SearchOffersScreen(navController: NavController) {
     auth = Firebase.auth
     storage = Firebase.storage
-    val user = auth.currentUser
+    var user = auth.currentUser
     var storageRef = storage.reference
     val offers = remember { mutableStateListOf<Offer>() }
     var isLoading by remember { mutableStateOf(true) }
     var numOffers by remember { mutableStateOf(0) }
     var selectedOption by remember { mutableStateOf("Using Search Bar") }
     var selectedOffer by remember { mutableStateOf<Offer?>(null) }
+    var userInfo by remember { mutableStateOf<Map<String, Any>?>(null) }
+    val docRef = user?.let { db.collection("users").document(it.uid) }
+    var userLat = userInfo?.get("latitude")
+    var userLng = userInfo?.get("longitude")
     LaunchedEffect(selectedOffer == null) {
         if (selectedOffer == null) {
             isLoading = true
@@ -74,54 +79,86 @@ fun SearchOffersScreen(navController: NavController) {
         val offersCollection = firestore.collection("offers")
         offersCollection.whereEqualTo("available", true).get()
             .addOnSuccessListener { result ->
-                numOffers = result.size()
-                println(numOffers)
-                for (document in result) {
-                    val offer = document.toObject(Offer::class.java)
-                    offer.id = document.id
-                    offer.offeredBy?.let {
-                        storageRef.child(it.id).downloadUrl.addOnSuccessListener { it ->
-                            if (it != null) {
-                                offer.coverFilePath = it.toString()
+                docRef?.get()?.addOnSuccessListener { document ->
+                    if (document != null) {
+                        Log.d(ContentValues.TAG, "DocumentSnapshot data: ${document.data}")
+                        userInfo = document.data
+                        userLat = userInfo?.get("latitude")
+                        userLng = userInfo?.get("longitude")
+                        numOffers = result.size()
+                        println(numOffers)
+                        for (document in result) {
+                            val offer = document.toObject(Offer::class.java)
+                            offer.id = document.id
+                            offer.offeredBy?.let {
+                                val docRef = db.collection("users").document(it.id)
+                                docRef?.get()?.addOnSuccessListener { document ->
+                                    if (document != null) {
+                                        Log.d(ContentValues.TAG, "DocumentSnapshot data: ${document.data}")
+                                        println(userLat)
+                                        println(userLng)
+                                        println(document.data?.get("latitude"))
+                                        println(document.data?.get("longitude"))
+                                        offer.distance = calculateDistance(
+                                            userLat as Double,
+                                            userLng as Double,
+                                            document.data?.get("latitude") as Double,
+                                            document.data?.get("longitude") as Double)
+                                        println(offer.distance)
+                                    } else {
+                                        Log.d(ContentValues.TAG, "No such document")
+                                    }
+                                }?.addOnFailureListener { exception ->
+                                    Log.d(ContentValues.TAG, "get failed with ", exception)
+                                }
+                                storageRef.child(it.id).downloadUrl.addOnSuccessListener { it ->
+                                    if (it != null) {
+                                        offer.coverFilePath = it.toString()
+                                    }
+                                    println(it.toString())
+                                    numCompleteCovers += 1
+                                    if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                        isLoading = false
+                                    }
+                                }.addOnFailureListener {
+                                    // handle error
+                                    numCompleteCovers += 1
+                                    if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                        isLoading = false
+                                    }
+                                }
                             }
-                            println(it.toString())
-                            numCompleteCovers += 1
-                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
-                                isLoading = false
+                            if (offer.imageFilePath != "" && offer.imageFilePath != null) {
+                                println("we are here!")
+                                storageRef.child(offer.imageFilePath).downloadUrl.addOnSuccessListener { it ->
+                                    if (it != null) {
+                                        offer.imageFilePath = it.toString()
+                                    }
+                                    println(it.toString())
+                                    numCompleteOffers += 1
+                                    if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                        isLoading = false
+                                    }
+                                }.addOnFailureListener {
+                                    // handle error
+                                    numCompleteOffers += 1
+                                    if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                        isLoading = false
+                                    }
+                                }
+                            } else {
+                                numCompleteOffers += 1
+                                if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
+                                    isLoading = false
+                                }
                             }
-                        }.addOnFailureListener {
-                            // handle error
-                            numCompleteCovers += 1
-                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
-                                isLoading = false
-                            }
-                        }
-                    }
-                    if (offer.imageFilePath != "" && offer.imageFilePath != null) {
-                        println("we are here!")
-                        storageRef.child(offer.imageFilePath).downloadUrl.addOnSuccessListener { it ->
-                            if (it != null) {
-                                offer.imageFilePath = it.toString()
-                            }
-                            println(it.toString())
-                            numCompleteOffers += 1
-                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
-                                isLoading = false
-                            }
-                        }.addOnFailureListener {
-                            // handle error
-                            numCompleteOffers += 1
-                            if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
-                                isLoading = false
-                            }
+                            offers.add(offer)
                         }
                     } else {
-                        numCompleteOffers += 1
-                        if (numCompleteOffers == numOffers && numOffers == numCompleteCovers) {
-                            isLoading = false
-                        }
+                        Log.d(ContentValues.TAG, "No such document")
                     }
-                    offers.add(offer)
+                }?.addOnFailureListener { exception ->
+                    Log.d(ContentValues.TAG, "get failed with ", exception)
                 }
             }
             .addOnFailureListener { exception ->
@@ -151,11 +188,10 @@ fun SearchOffersScreen(navController: NavController) {
                             selectedOption = selectedOption,
                             onOptionSelected = { selectedOption = it })
                         if (selectedOption == "Using Maps") {
-                            MapComposable()
+                            MapComposable(userLat, userLng, offers)
                         }
                         OffersList(
                             offers = offers,
-                            navController,
                             onOfferSelected = { selectedOffer = it })
                     }
                 }
@@ -236,41 +272,6 @@ fun SearchOffersPlaceholder() {
     Text("Placeholder")
 }
 
-@Composable
-fun searchOffersScreen(offers: List<Offer>, navController: NavController) {
-    var selectedOption by remember { mutableStateOf("Using Search Bar") }
-    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
-
-    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
-        Scaffold(
-            bottomBar = {
-                NavBar(navController, "foodReceiver")
-            },
-        ) { inner ->
-            selectedOffer?.let { OfferDetailsScreen(selectedOffer = it, onOfferSelected = { selectedOffer = it }) }
-
-            if (selectedOffer == null) {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(bottom = inner.calculateBottomPadding())
-                ) {
-                    BrowseOffers()
-                    CustomToggle(
-                        selectedOption = selectedOption,
-                        onOptionSelected = { selectedOption = it })
-                    if (selectedOption == "Using Maps") {
-                        MapComposable()
-                    }
-                    OffersList(
-                        offers = offers,
-                        navController,
-                        onOfferSelected = { selectedOffer = it })
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun BrowseOffers() {
@@ -289,11 +290,9 @@ fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
 
 
     Row(modifier = Modifier.fillMaxWidth()) {
-        // Personal Account Button
         OutlinedButton(
             onClick = { onOptionSelected("Using Search Bar") },
             modifier = Modifier.weight(1f),
-            // Remove gap by setting border to null and elevation to 0.dp
             border = if (selectedOption == "Using Search Bar") BorderStroke(1.dp, Color(0xFF00BF81)) else null,
             elevation = null,
             colors = if (selectedOption == "Using Search Bar") ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00BF81)) else ButtonDefaults.buttonColors(backgroundColor = Color(0xFFF6F6F6))
@@ -304,11 +303,9 @@ fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
             )
         }
 
-        // Business Account Button
         OutlinedButton(
             onClick = { onOptionSelected("Using Maps") },
             modifier = Modifier.weight(1f),
-            // Remove gap by setting border to null and elevation to 0.dp
             border = if (selectedOption == "Using Maps") BorderStroke(1.dp, Color(0xFF00BF81)) else null,
             elevation = null,
             colors = if (selectedOption == "Using Maps") ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00BF81)) else ButtonDefaults.buttonColors(backgroundColor = Color(0xFFF6F6F6))
@@ -322,13 +319,7 @@ fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
 }
 
 @Composable
-fun OffersList(offers: List<Offer>, navController: NavController, onOfferSelected: (Offer?) -> Unit) {
-//    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
-
-//    if (selectedOffer != null) {
-//        OfferDetailsScreen(selectedOffer!!, onOfferSelected = { selectedOffer = it })
-//    }
-
+fun OffersList(offers: List<Offer>, onOfferSelected: (Offer?) -> Unit) {
     LazyColumn (
         modifier = Modifier
             .padding(vertical = 16.dp)
@@ -338,7 +329,7 @@ fun OffersList(offers: List<Offer>, navController: NavController, onOfferSelecte
         items(offers) { offers ->
             Box(
                 modifier = Modifier
-                    .padding(8.dp) // Add padding around each item for spacing
+                    .padding(8.dp)
                     .fillMaxWidth()
             ) {
                 val imagePainter = rememberAsyncImagePainter(
@@ -372,12 +363,11 @@ fun CustomImageButton(
 
 ) {
     Card(
-        shape = RoundedCornerShape(24.dp), // corners rounded
+        shape = RoundedCornerShape(24.dp),
         modifier = Modifier.clickable(onClick = onButtonClick),
         elevation = 4.dp,
     ) {
         Column {
-            // Image part
             Image(
                 painter = imagePainter,
                 contentDescription = null,

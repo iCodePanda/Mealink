@@ -4,12 +4,15 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.myapplication.Offer
+import com.example.myapplication.OffersList
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -17,20 +20,24 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.CircleOptions
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.math.*
 
+
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapComposable() {
+fun MapComposable(userLat: Any?, userLng: Any?, offers: SnapshotStateList<Offer>) {
     val context = LocalContext.current
     var map: GoogleMap? by remember { mutableStateOf(null) }
     val mapView = remember { MapView(context).apply { onCreate(Bundle()) } }
     val locationPermission = rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
-    var radius by remember { mutableStateOf(5f) } // Radius in km, initially set to 5
+    var radius by remember { mutableStateOf(5f) }
     var userLocation by remember { mutableStateOf<LatLng?>(null) }
+    var radiusSet by remember { mutableStateOf(false) }
+    var selectedOffer by remember { mutableStateOf<Offer?>(null) }
 
     DisposableEffect(key1 = mapView) {
         mapView.onStart()
@@ -43,61 +50,71 @@ fun MapComposable() {
     }
 
     val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-    LaunchedEffect(key1 = locationPermission.status.isGranted) {
+    LaunchedEffect(key1 = locationPermission.status.isGranted, key2 = radius) {
         locationPermission.launchPermissionRequest()
         if (locationPermission.status.isGranted) {
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
-                    userLocation = LatLng(it.latitude, it.longitude)
+                    userLocation = LatLng(userLat as Double, userLng as Double)
                     map?.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 10f))
+                    map?.clear()
+                    map?.addCircle(
+                        CircleOptions()
+                            .center(userLocation)
+                            .radius((radius * 1000).toDouble())
+                    )
                 }
             }
         }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        AndroidView({ mapView }, modifier = Modifier.weight(1f)) { mapView ->
-            mapView.getMapAsync { googleMap ->
-                map = googleMap
-                if (locationPermission.status.isGranted) {
-                    map?.isMyLocationEnabled = true
+        if (!radiusSet) {
+            AndroidView({ mapView }, modifier = Modifier.weight(1f)) { mapView ->
+                mapView.getMapAsync { googleMap ->
+                    map = googleMap
+                    if (locationPermission.status.isGranted) {
+                        map?.isMyLocationEnabled = true
+                    }
                 }
             }
-        }
-        // Display the current radius value
-        Text(
-            text = "Radius: ${radius.toInt()} km",
-            modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
-        )
-        Slider(
-            value = radius,
-            onValueChange = { radius = it },
-            valueRange = 1f..10f, // Slider range from 1 to 10 km
-            modifier = Modifier.padding(horizontal = 16.dp),
-            colors = SliderDefaults.colors(
-                activeTrackColor = Color(0xFF00BF81),
-                thumbColor = Color(0xFF00BF81),
-                inactiveTrackColor = Color(0xFF00BF81).copy(alpha = 0.24f) // Adjust the inactive part to be more transparent
+            Text(
+                text = "Radius: ${radius.toInt()} km",
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(8.dp)
             )
+            Slider(
+                value = radius,
+                onValueChange = { radius = it },
+                valueRange = 1f..10f,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                colors = SliderDefaults.colors(
+                    activeTrackColor = Color(0xFF00BF81),
+                    thumbColor = Color(0xFF00BF81),
+                    inactiveTrackColor = Color(0xFF00BF81).copy(alpha = 0.24f)
+                )
 
-        )
-        Button(
-            onClick = {
-                userLocation?.let {
-                    map?.clear() // Clear old markers
-                    queryRestaurantsNearby(it, radius, map)
-                }
-            },
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = Color(0xFF00BF81), // Set the background color
-                contentColor = Color.White // Ensure the content (text/icons) color is white
             )
-        ) {
-            Text("Set Radius")
+            Button(
+                onClick = {
+                    radiusSet = true
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color(0xFF00BF81),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Set Radius")
+            }
         }
+        if (radiusSet) {
+            OffersList(offers = offers.filter { it.distance < radius }, onOfferSelected = { selectedOffer = it })
+        }
+
     }
 }
 
