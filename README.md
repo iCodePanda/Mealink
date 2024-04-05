@@ -41,7 +41,7 @@ Our app connects these 2 users, and makes the coordination of food simple, quick
 **SPRINT 1:**
 
 _15-February-2024
-V 0.1_
+V 0.25_
 
 
 _Tickets Completed (more details in development journal):_
@@ -74,7 +74,7 @@ This version contains:
 **SPRINT 2:**
 
 _08-March-2024
-V 0.2_
+V 0.50_
 
 
 _Features/Tickets Completed (more details in development journal):_
@@ -111,7 +111,7 @@ This version contains:
 **SPRINT 3:**
 
 _22-March-2024
-V 0.3_
+V 0.75_
 
 _Features/Tickets Completed (more details in development journal):_
 
@@ -143,3 +143,44 @@ This version contains:
 
 
 [Link to Installer](https://git.uwaterloo.ca/g24kang/team-101-10/-/blob/main/Releases/v0.3/app-debug.apk)
+
+**SPRINT 4:**
+
+_5-April-2024
+V 1.0_
+
+_Features/Tickets Completed (more details in development journal):_
+
+- **Consistency:**
+   - [Convert create offer page into a Composable](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/38)
+   - [Convert search offers screen from Activity to Composable](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/41)
+   - [Add navbar to each page - ensure it is persistent](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/43)
+- Worked on offer search and offer details screens to finalize design for images and functionality
+   - [Display correct image on the search offers page](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/39)
+   - [Add offer image to each food offer](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/40)
+- Instead of creating a messaging tool within the app, (which would distract from the primary goals of the app), we use email as a tool for handling communications regarding offers/requests
+   - [Implement email service for accepted offers](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/42)
+- Made some stylistic improvements that needed to be made to the MapsActivity and UserProfile and implemented a scrollbar
+   - [Sprint 4 UI fixes, and implement a scrollbar](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/50)
+- **Quality/Style:**
+   - [Redirect back to search offers page after offer is accepted](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/44)
+   - [Add back button to offer details page](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/45)
+   - [add input validation to the create offer screen](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/46)
+   - [User should not need to log in each time they open the app](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/48)
+   - [Fix photo picker crashing issue](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/47)
+   - [Unfocus textbox when tapping outside](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/27)
+   - [Text box highlights and other accents don't match green theme](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/49)
+- **Testing:**
+   - [set up testing dependencies and first few unit tests](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/51)
+   - [Core Functionality Unit Tests](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/52)
+- [Ability to open up locations in Google Maps](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/6)
+- [Ability to include images in offering/requesting posts](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/10)
+- **Final Submission:**
+   - [Completed the class diagram for the Design Documentation](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/54)
+   - [Completed the component diagram for the Design Documentation](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/55)
+  - [Updated README for final project submission](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/53)
+  - Created wikis for [Design Documentation](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/Design-Documentation) and [User Documentation](https://git.uwaterloo.ca/g24kang/team-101-10/-/wikis/User-Documentation)
+  - [Started working on User Documentation](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/56)
+
+
+Link to Installer
