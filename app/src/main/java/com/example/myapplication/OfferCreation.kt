@@ -118,7 +118,12 @@ fun ItemName(name: String, onNameChange: (String) -> Unit) {
     OutlinedTextField(
         value = name,
         onValueChange = onNameChange,
-        label = { Text("Item Name") }
+        label = { Text("Item Name") },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF00BF81),
+            cursorColor = Color(0xFF00BF81),
+            focusedLabelColor = Color(0xFF00BF81)
+        )
     )
 }
 
@@ -127,7 +132,12 @@ fun Description(description: String, onDescChange: (String) -> Unit) {
     OutlinedTextField(
         value = description,
         onValueChange = onDescChange,
-        label = { Text("Description") }
+        label = { Text("Description") },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF00BF81),
+            cursorColor = Color(0xFF00BF81),
+            focusedLabelColor = Color(0xFF00BF81)
+        )
     )
 }
 
@@ -136,7 +146,12 @@ fun PortionCount(portionCount: String, onCountChange: (String) -> Unit) {
     OutlinedTextField(
         value = portionCount,
         onValueChange = onCountChange,
-        label = { Text("Portion Count") }
+        label = { Text("Portion Count") },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF00BF81),
+            cursorColor = Color(0xFF00BF81),
+            focusedLabelColor = Color(0xFF00BF81)
+        )
     )
 }
 
@@ -200,6 +215,11 @@ fun TimePicker(onTimeChange: (Long) -> Unit) {
         label = { Text("Available Time", color = Color.DarkGray) },
         enabled = false,
         modifier = Modifier.clickable { showTimePicker = true },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = Color(0xFF00BF81),
+            cursorColor = Color(0xFF00BF81),
+            focusedLabelColor = Color(0xFF00BF81)
+        )
     )
 
     if (showTimePicker) {

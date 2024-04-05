@@ -39,6 +39,16 @@ import org.json.JSONObject
 private lateinit var auth: FirebaseAuth
 private lateinit var storage: FirebaseStorage
 
+
+object ProfileValidator {
+    fun isValidName(name: String): Boolean = name.isNotEmpty()
+
+    fun isValidEmail(email: String): Boolean =
+        email.matches(Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$"))
+
+    fun isValidLocation(location: String): Boolean = location.isNotEmpty()
+}
+
 @Composable
 fun UserProfileScreen(navController: NavController) {
     auth = Firebase.auth
