@@ -300,9 +300,18 @@ fun ItemPicture(imageURI: String, onImageSelected: (String) -> Unit) {
         Text(text = "Tap to upload image", Modifier.padding(top = 8.dp))
     }
 }
-@Composable
-fun CreateOffersPlaceholder() {
-    Text("Placeholder")
+object offerValidation {
+    fun testEmptyString(name: String): Boolean {
+        return name == ""
+    }
+
+    fun validatePortion(portion: String): Boolean {
+        return portion.toIntOrNull() == null
+    }
+
+    fun validateTime(time: Long): Boolean {
+        return time < System.currentTimeMillis()
+    }
 }
 
 @Composable
@@ -319,19 +328,19 @@ fun AddOfferButton(
 
     ExtendedFloatingActionButton(
         onClick = {
-            if (name == "") {
+            if (offerValidation.testEmptyString(name)) {
                 Toast.makeText(context, "Please Enter a Name", Toast.LENGTH_SHORT).show()
             }
-            else if (description == "") {
+            else if (offerValidation.testEmptyString(description)) {
                 Toast.makeText(context, "Please Enter a Description", Toast.LENGTH_SHORT).show()
             }
-            else if (portionCount.toIntOrNull() == null) {
+            else if (offerValidation.validatePortion(portionCount)) {
                 Toast.makeText(context, "Please Enter a Valid Portion Count", Toast.LENGTH_SHORT).show()
             }
-            else if (availableTime < System.currentTimeMillis()) {
+            else if (offerValidation.validateTime(availableTime)) {
                 Toast.makeText(context, "Please Enter a Valid Time", Toast.LENGTH_SHORT).show()
             }
-            else if (selectedImageFile == "") {
+            else if (offerValidation.testEmptyString(selectedImageFile)) {
                 Toast.makeText(context, "Please Select an Image", Toast.LENGTH_SHORT).show()
             }
             else {

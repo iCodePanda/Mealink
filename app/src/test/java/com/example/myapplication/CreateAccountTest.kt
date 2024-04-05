@@ -20,25 +20,27 @@ class CreateAccountTest {
     @Test
     fun `email validation returns false for invalid email`() {
         // Arrange
-        val badEmail4 = "@."
-
-        // Act
-        val result = SignUpValidation.validateEmail(badEmail4)
-
-        // Assert
-        assertFalse("Email should be invalid", result)
-    }
-    @Test
-
-    fun `email validation returns false for email without user`() {
-        // Arrange
-        val badEmail = "gmail.com"
+        val badEmail = "@."
 
         // Act
         val result = SignUpValidation.validateEmail(badEmail)
 
         // Assert
         assertFalse("Email should be invalid", result)
+
+        // Arrange
+        val badEmail2 = "gmail.com"
+
+        // Act
+        val result2 = SignUpValidation.validateEmail(badEmail2)
+
+        // Assert
+        assertFalse("Email should be invalid", result2)
+    }
+    @Test
+
+    fun `email validation returns false for email without user`() {
+
     }
 
     @Test
@@ -54,7 +56,7 @@ class CreateAccountTest {
     }
 
     @Test
-    fun `password validation returns false for no-number password`() {
+    fun `password validation returns false for invalid password`() {
         // Arrange
         val password = "qwertyuiop"
 
@@ -63,18 +65,15 @@ class CreateAccountTest {
 
         // Assert
         assertFalse("Password should be invalid (no numbers)", result)
-    }
 
-    @Test
-    fun `password validation returns false for short password` () {
         // Arrange
-        val password = "abcdef"
+        val password2 = "abcdef"
 
         // Act
-        val result = SignUpValidation.validatePassword(password)
+        val result2 = SignUpValidation.validatePassword(password2)
 
         // Assert
-        assertFalse("Password is too short, should be at least 8 chars long", result)
+        assertFalse("Password is too short, should be at least 8 chars long", result2)
     }
 
     @Test
@@ -100,7 +99,4 @@ class CreateAccountTest {
         // Assert
         assertFalse("Invalid postal code", result)
     }
-
-
-
 }
