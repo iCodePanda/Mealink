@@ -2,14 +2,8 @@ package com.example.myapplication
 
 import android.content.ContentValues.TAG
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.ui.Modifier
@@ -21,7 +15,6 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
@@ -58,7 +51,20 @@ fun SignUpScreen() {
         }
     }
 }
-
+object SignUpValidation {
+    fun validateEmail(email: String): Boolean {
+        val emailFormat = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
+        return email.matches(emailFormat)
+    }
+    fun validatePassword(password: String): Boolean {
+        val passwordFormat = Regex("^(?=.*[0-9]).{8,}\$")
+        return password.matches(passwordFormat)
+    }
+    fun validatePostalCode(location: String): Boolean {
+        val locationFormat = Regex("^[A-Z]\\d[A-Z] \\d[A-Z]\\d\$")
+        return location.matches(locationFormat)
+    }
+}
 @Composable
 fun SignUpButton(email: String, password: String, name: String, type: String, location: String) {
     val context = LocalContext.current
@@ -70,13 +76,10 @@ fun SignUpButton(email: String, password: String, name: String, type: String, lo
         contentColor = Color(0xFFFFFFFF),
         text = { Text("Sign Up") },
         onClick = {
-            val emailFormat = Regex("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\$")
-            val passwordFormat = Regex("^(?=.*[0-9]).{8,}\$")
-            val locationFormat = Regex("^[A-Z]\\d[A-Z] \\d[A-Z]\\d\$")
-            if (!email.matches(emailFormat)) {
+            if (!SignUpValidation.validateEmail(email)) {
                 Toast.makeText(context, "Invalid Email", Toast.LENGTH_SHORT).show()
             }
-            else if (!password.matches(passwordFormat)) {
+            else if (!SignUpValidation.validatePassword(password)) {
                 Toast.makeText(context, "Invalid Password", Toast.LENGTH_SHORT).show()
             }
             else if (name == "") {
@@ -85,7 +88,7 @@ fun SignUpButton(email: String, password: String, name: String, type: String, lo
             else if (type == "") {
                 Toast.makeText(context, "Please Select a Type", Toast.LENGTH_SHORT).show()
             }
-            else if (!location.matches(locationFormat)) {
+            else if (!SignUpValidation.validatePostalCode(location)) {
                 Toast.makeText(context, "Invalid Postal Code", Toast.LENGTH_SHORT).show()
             }
             else {
@@ -110,7 +113,6 @@ fun NameField(name: String, onNameChange: (String) -> Unit) {
 fun TypeField(type: String, onTypeChange: (String) -> Unit) {
     val options = arrayOf("foodDonor", "foodReceiver")
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember { mutableStateOf("Select an Option") }
 
         ExposedDropdownMenuBox(
             expanded = expanded,
