@@ -183,4 +183,4 @@ _Features/Tickets Completed (more details in development journal):_
   - [Started working on User Documentation](https://git.uwaterloo.ca/g24kang/team-101-10/-/issues/56)
 
 
-Link to Installer
+[Link to Installer](https://git.uwaterloo.ca/g24kang/team-101-10/-/blob/main/Releases/v0.4/app-debug.apk)
