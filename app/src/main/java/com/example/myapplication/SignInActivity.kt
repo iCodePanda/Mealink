@@ -4,6 +4,8 @@ import android.content.ContentValues.TAG
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -11,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,8 +34,18 @@ object AuthValidator {
 fun SignInScreen(navController: NavController, auth: FirebaseAuth = Firebase.auth) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var interactionSource = remember { MutableInteractionSource() }
+    val focusManager = LocalFocusManager.current
+
     Surface(
-        modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {focusManager.clearFocus(true)}
+            ),
+        color = Color(0xFFF6F6F6)
     ) {
         Column(
             modifier = Modifier.padding(top = 50.dp),

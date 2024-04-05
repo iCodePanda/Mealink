@@ -2,7 +2,6 @@ package com.example.myapplication
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -13,6 +12,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -21,17 +21,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Alignment
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.layout.ContentScale
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
 import coil.compose.*
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import com.google.firebase.firestore.firestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.storage
 import java.net.HttpURLConnection
@@ -107,7 +105,18 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
     var name by remember { mutableStateOf(userName) }
     var email by remember { mutableStateOf(userEmail) }
     var location by remember { mutableStateOf(userLocation) }
-    Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+    var interactionSource = remember { MutableInteractionSource() }
+    val focusManager = LocalFocusManager.current
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = {focusManager.clearFocus(true)}
+            ),
+        color = Color(0xFFF6F6F6)) {
         Scaffold(
             bottomBar = {
                 NavBar(navController, type)

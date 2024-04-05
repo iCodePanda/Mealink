@@ -1,16 +1,13 @@
 package com.example.myapplication
 import android.content.ContentValues.TAG
-import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material3.DatePicker
@@ -25,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -57,9 +55,19 @@ fun OfferCreateScreen(navController: NavController) {
     var selectedDate by remember { mutableLongStateOf(0L) }
     var selectedTime by remember { mutableLongStateOf(0L) }
     var selectedImageFile by remember { mutableStateOf("") }
+    var interactionSource = remember { MutableInteractionSource() }
+    val focusManager = LocalFocusManager.current
 
     MyApplicationTheme {
-        Surface(modifier = Modifier.fillMaxSize(), color = Color(0xFFF6F6F6)) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = {focusManager.clearFocus(true)}
+                ),
+            color = Color(0xFFF6F6F6)) {
             Scaffold(
                 bottomBar = {
                     NavBar(navController, "foodDonor")
