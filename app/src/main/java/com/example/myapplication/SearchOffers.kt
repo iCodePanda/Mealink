@@ -188,7 +188,7 @@ fun SearchOffersScreen(navController: NavController) {
                             selectedOption = selectedOption,
                             onOptionSelected = { selectedOption = it })
                         if (selectedOption == "Using Maps") {
-                            MapComposable(userLat, userLng, offers)
+                            MapComposable(userLat, userLng, offers, onOfferSelected = { selectedOffer = it })
                         }
                         OffersList(
                             offers = offers,

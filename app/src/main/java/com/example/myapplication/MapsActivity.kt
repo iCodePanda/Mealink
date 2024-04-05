@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.example.myapplication.Offer
+import com.example.myapplication.OfferDetailsScreen
 import com.example.myapplication.OffersList
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -29,7 +30,7 @@ import kotlin.math.*
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MapComposable(userLat: Any?, userLng: Any?, offers: SnapshotStateList<Offer>) {
+fun MapComposable(userLat: Any?, userLng: Any?, offers: SnapshotStateList<Offer>, onOfferSelected : (Offer?) -> Unit) {
     val context = LocalContext.current
     var map: GoogleMap? by remember { mutableStateOf(null) }
     val mapView = remember { MapView(context).apply { onCreate(Bundle()) } }
@@ -112,7 +113,15 @@ fun MapComposable(userLat: Any?, userLng: Any?, offers: SnapshotStateList<Offer>
             }
         }
         if (radiusSet) {
-            OffersList(offers = offers.filter { it.distance < radius }, onOfferSelected = { selectedOffer = it })
+//            if (selectedOffer == null) {
+                OffersList(offers = offers.filter { it.distance < radius }, onOfferSelected = {
+                    selectedOffer = it
+                    onOfferSelected(selectedOffer)
+                })
+            //}
+//            else {
+//                OfferDetailsScreen(selectedOffer = selectedOffer!!, onOfferSelected = { selectedOffer = it })
+//            }
         }
 
     }

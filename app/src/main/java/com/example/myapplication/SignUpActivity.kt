@@ -176,7 +176,6 @@ fun createAccount(email: String, password: String, name: String, type: String, l
     auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                // Sign in success, update UI with the signed-in user's information
                 Log.d(TAG, "createUserWithEmail:success")
                 val user = auth.currentUser
                 fetchCoordinatesFromAddress(context, location, "AIzaSyBikmTl_I4bRyx83Yk1XNBsE8jfj9z8_TU", onSuccess = { lat, lng ->
