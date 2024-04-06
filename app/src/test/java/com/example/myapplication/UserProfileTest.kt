@@ -7,7 +7,7 @@ class ProfileValidatorTest {
     @Test
     fun `name validation returns true for non-empty name`() {
         // Arrange
-        val name = "Ma Teng"
+        val name = "Test User"
 
         // Act
         val result = ProfileValidator.isValidName(name)
