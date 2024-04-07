@@ -69,6 +69,9 @@ fun AppNavigation() {
             composable(Screens.CreateOffers.route) {
                 OfferCreateScreen(navController)
             }
+            composable(Screens.MyOffers.route) {
+                MyOffers(navController)
+            }
         }
     }
 }

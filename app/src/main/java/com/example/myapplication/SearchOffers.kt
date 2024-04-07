@@ -268,12 +268,6 @@ class SearchOffers: AppCompatActivity() {
 }
 
 @Composable
-fun SearchOffersPlaceholder() {
-    Text("Placeholder")
-}
-
-
-@Composable
 fun BrowseOffers() {
     Text(
         "Browse Offers",

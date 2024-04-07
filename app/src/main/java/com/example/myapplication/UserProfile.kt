@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import coil.compose.*
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
@@ -101,14 +102,6 @@ fun UserProfileScreen(navController: NavController) {
         LoadFailScreen()
     }
 }
-class UserProfileActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            Text("Placeholder screen")
-        }
-    }
-}
 
 @Composable
 fun ProfileScreen(userName: String, userEmail: String, userLocation: String, type: String, imageURI: String, navController: NavController) {
@@ -142,6 +135,23 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row {
+                    if (type == "foodDonor") {
+                        ExtendedFloatingActionButton(
+                            onClick = {
+                                navController.navigate(Screens.MyOffers.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            },
+                            text = {Text("Manage My Current Offers")},
+                            backgroundColor = Color(0xFF00BF81),
+                            elevation = FloatingActionButtonDefaults.elevation(0.dp),
+                            contentColor = Color(0xFFFFFFFF),
+                        )
+                    }
                     Spacer(Modifier.weight(1f))
                     Signout(name)
                 }
