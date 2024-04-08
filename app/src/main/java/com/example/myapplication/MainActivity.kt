@@ -86,7 +86,6 @@ fun Home(navController: NavController) {
         ) {
             Title()
             MainPageImage()
-            ButtonGoogle()
             ButtonEmail { navController.navigate(Screens.Login.route) }
             NotMember()
             ButtonCreateAccount { navController.navigate(Screens.Signup.route) }
@@ -94,28 +93,28 @@ fun Home(navController: NavController) {
     }
 }
 
-@Composable
-fun ButtonGoogle() {
-    val context = LocalContext.current
-    ExtendedFloatingActionButton(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        backgroundColor = Color(0xFFFFFFFF),
-        text = { Text("Continue with Google") },
-
-        onClick = {  },
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.google),
-                "",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(40.dp)
-            )
-        },
-        elevation = FloatingActionButtonDefaults.elevation(8.dp)
-    )
-}
+//@Composable
+//fun ButtonGoogle() {
+//    val context = LocalContext.current
+//    ExtendedFloatingActionButton(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .padding(horizontal = 16.dp),
+//        backgroundColor = Color(0xFFFFFFFF),
+//        text = { Text("Continue with Google") },
+//
+//        onClick = {  },
+//        icon = {
+//            Icon(
+//                painter = painterResource(id = R.drawable.google),
+//                "",
+//                tint = Color.Unspecified,
+//                modifier = Modifier.size(40.dp)
+//            )
+//        },
+//        elevation = FloatingActionButtonDefaults.elevation(8.dp)
+//    )
+//}
 
 @Composable
 fun ButtonEmail(navigateTo: () -> Unit) {

@@ -146,7 +146,7 @@ fun ProfileScreen(userName: String, userEmail: String, userLocation: String, typ
                                     restoreState = true
                                 }
                             },
-                            text = {Text("Manage My Current Offers")},
+                            text = {Text("Manage My Offers")},
                             backgroundColor = Color(0xFF00BF81),
                             elevation = FloatingActionButtonDefaults.elevation(0.dp),
                             contentColor = Color(0xFFFFFFFF),

@@ -140,7 +140,7 @@ fun MyOffers(navController: NavController) {
                             onClick = {
                                 navController.navigate(Screens.Profile.route)
                             },
-                            text = { Text("⬅ Back to My Profile") },
+                            text = { Text("Back") },
                             backgroundColor = Color(0xFF00BF81),
                             elevation = FloatingActionButtonDefaults.elevation(0.dp),
                             contentColor = Color(0xFFFFFFFF),
@@ -151,7 +151,7 @@ fun MyOffers(navController: NavController) {
                             onClick = { counter++ },
                             backgroundColor = Color(0xFF00BF81),
                             contentColor = Color(0xFFFFFFFF),
-                            text = {Text("REFRESH 🔃")}
+                            text = {Text("Refresh")}
                         )
                     }
                     Text(text = "Manage Current Offers",

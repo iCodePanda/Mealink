@@ -184,12 +184,9 @@ fun SearchOffersScreen(navController: NavController) {
                             .padding(bottom = inner.calculateBottomPadding())
                     ) {
                         BrowseOffers()
-                        CustomToggle(
-                            selectedOption = selectedOption,
-                            onOptionSelected = { selectedOption = it })
-                        if (selectedOption == "Using Maps") {
+
                             MapComposable(userLat, userLng, offers, onOfferSelected = { selectedOffer = it })
-                        }
+
                         OffersList(
                             offers = offers,
                             onOfferSelected = { selectedOffer = it })
@@ -259,9 +256,6 @@ class SearchOffers: AppCompatActivity() {
                 if (numCompleteOffers != numOffers || numCompleteCovers != numOffers) {
                     LoadingScreen()
                 }
-                else {
-//                    searchOffersScreen(offers = offers)
-                }
             }
         }
     }
@@ -277,39 +271,6 @@ fun BrowseOffers() {
             .padding(horizontal = 16.dp)
             .padding(vertical = 16.dp)
     )
-}
-
-@Composable
-fun CustomToggle(selectedOption: String, onOptionSelected: (String) -> Unit) {
-
-
-    Row(modifier = Modifier.fillMaxWidth()) {
-        OutlinedButton(
-            onClick = { onOptionSelected("Using Search Bar") },
-            modifier = Modifier.weight(1f),
-            border = if (selectedOption == "Using Search Bar") BorderStroke(1.dp, Color(0xFF00BF81)) else null,
-            elevation = null,
-            colors = if (selectedOption == "Using Search Bar") ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00BF81)) else ButtonDefaults.buttonColors(backgroundColor = Color(0xFFF6F6F6))
-        ) {
-            Text(
-                text = "Using Search Bar",
-                color = if (selectedOption == "Using Search Bar") Color.White else Color(0xFF00BF81)
-            )
-        }
-
-        OutlinedButton(
-            onClick = { onOptionSelected("Using Maps") },
-            modifier = Modifier.weight(1f),
-            border = if (selectedOption == "Using Maps") BorderStroke(1.dp, Color(0xFF00BF81)) else null,
-            elevation = null,
-            colors = if (selectedOption == "Using Maps") ButtonDefaults.buttonColors(backgroundColor = Color(0xFF00BF81)) else ButtonDefaults.buttonColors(backgroundColor = Color(0xFFF6F6F6))
-        ) {
-            Text(
-                text = "Using Maps",
-                color = if (selectedOption == "Using Maps") Color.White else Color(0xFF00BF81)
-            )
-        }
-    }
 }
 
 @Composable
